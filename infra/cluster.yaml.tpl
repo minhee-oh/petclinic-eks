@@ -13,9 +13,13 @@ metadata:
     Env: ${TAG_ENV}
 
 # 인증은 액세스 엔트리(API) — aws-auth ConfigMap 을 쓰지 않는다
-# 클러스터를 만든 로컬 IAM 주체는 자동으로 관리자. 관리 EC2 역할은 따로 엔트리가 있어야 kubectl 가능(대체 경로·빌드 후 배포)
+# 클러스터를 만든 로컬 IAM 주체는 자동으로 관리자(bootstrapClusterCreatorAdminPermissions 기본 true).
+#   같은 주체를 accessEntries 에 또 넣으면 중복 엔트리가 된다 → 5일 동안은 자동 엔트리를 그대로 쓴다.
+#   운영이라면: 이 값을 false 로 두고 운영자 역할을 명시 엔트리로 넣어 생성자 권한을 회수한다 (보고서 기재)
+# 관리 EC2 역할은 따로 엔트리가 있어야 kubectl 가능(대체 경로·빌드 후 배포)
 accessConfig:
   authenticationMode: API
+  bootstrapClusterCreatorAdminPermissions: true
   accessEntries:
     - principalARN: arn:aws:iam::${ACCOUNT_ID}:role/pc-role-mgmt
       accessPolicies:
@@ -76,6 +80,9 @@ managedNodeGroups:
     volumeType: gp3
     volumeEncrypted: true
     disableIMDSv1: true
+    # Pod 가 IMDS 로 노드 역할을 물려받지 못하게 hop limit 1 (EKS Best Practices).
+    # 그래서 LBC 는 IMDS 로 VPC·리전을 찾지 못함 → 40-addons.sh 가 Helm 값에 region·vpcId 를 명시한다
+    disablePodIMDS: true
     privateNetworking: true
     subnets: [${SUBNET_APP_A}, ${SUBNET_APP_C}]
     # RDS SG 가 출처로 허용하는 SG. 2일차 확인: 노드 ENI 에 클러스터 SG 와 함께 붙었는지

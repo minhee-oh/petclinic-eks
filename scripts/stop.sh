@@ -47,6 +47,7 @@ wait_nodes_zero() {  # 초
 if ! wait_nodes_zero 900; then
   # 막힘 판정 — 이때만(조건부) kube-system 을 건드린다. 막히지 않은 밤에는 이 블록이 실행되지 않는다
   log "15분이 지나도 노드가 줄지 않음 = 막힘. 원인 기록: $LOG_DIR"
+  tunnel_up   # 15분 대기 동안 kubectl 을 안 써서 SSM 유휴 제한(20분)에 가까움 → 닫혔으면 다시 연다
   mkdir -p "$LOG_DIR"
   kubectl get pdb -A -o wide            > "$LOG_DIR/pdb.txt" 2>&1 || true
   kubectl get pods -A -o wide           > "$LOG_DIR/pods.txt" 2>&1 || true

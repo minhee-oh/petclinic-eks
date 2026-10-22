@@ -144,6 +144,10 @@ for i in $NODES; do
   echo "$i: $sgs"
   [[ " $sgs " == *" $CLUSTER_SG "* ]] || die "$i 에 클러스터 SG($CLUSTER_SG) 없음 — 원칙 위반. 노드 그룹 SG 설정 재검토 후 진행"
   [[ " $sgs " == *" $SG_NODE "* ]]    || die "$i 에 pc-sg-node($SG_NODE) 없음 — RDS 접속 불가"
+  # IMDS: v2 필수 + hop limit 1 (Pod 가 노드 역할을 못 물려받게)
+  imds=$(aws ec2 describe-instances --instance-ids $i \
+    --query 'Reservations[0].Instances[0].MetadataOptions.[HttpTokens,HttpPutResponseHopLimit]' --output text | xargs)
+  [ "$imds" = "required 1" ] || die "$i IMDS 설정이 '$imds' — 'required 1' 이어야 함 (disablePodIMDS 미반영)"
 done
-log "노드 SG 확인 (클러스터 SG + pc-sg-node)"
+log "노드 SG·IMDS 확인 (클러스터 SG + pc-sg-node, IMDSv2·hop limit 1)"
 log "클러스터 완료. 이후 쿠버네티스 API 작업(40-addons 등)은 터널 또는 관리 EC2 경유"

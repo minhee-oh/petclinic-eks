@@ -88,10 +88,12 @@ allow_sg() {
 
 # 터널 — 로컬에서 kubectl 이 localhost:8443 → EKS 프라이빗 엔드포인트로 가도록 SSM 포트 포워딩을 백그라운드로 연다
 # 관리 EC2 안에서 실행할 때는 PC_KUBE_DIRECT=1 로 건너뛴다
+# SSM 세션은 20분(기본) 동안 데이터가 없으면 끊긴다 → 긴 대기 뒤 kubectl 을 쓰기 전에 다시 호출한다 (열려 있으면 그대로)
 TUNNEL_PID=""
 tunnel_up() {
   [ "${PC_KUBE_DIRECT:-0}" = 1 ] && return 0
-  (echo > /dev/tcp/127.0.0.1/8443) 2>/dev/null && { log "터널 이미 열려 있음"; return 0; }
+  (echo > /dev/tcp/127.0.0.1/8443) 2>/dev/null && return 0
+  tunnel_down   # 끊긴 이전 세션 프로세스 정리
   command -v session-manager-plugin >/dev/null || die "Session Manager 플러그인 없음 (작업지시서 2-6)"
   local ep host
   ep=$(aws eks describe-cluster --name "$CLUSTER" --query cluster.endpoint --output text)

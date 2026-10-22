@@ -21,6 +21,7 @@ kubectl apply --server-side -f \
 helm repo add eks https://aws.github.io/eks-charts >/dev/null 2>&1 || true
 helm repo update eks >/dev/null
 # ALBGatewayAPI 기능 게이트는 v3.5.0 기본값 true (pkg/config/feature_gates.go) → 따로 켜지 않는다
+# region·vpcId 는 필수 — 노드가 disablePodIMDS(hop limit 1)라 LBC 가 IMDS 로 스스로 찾지 못한다
 helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system --version $LBC_CHART_VERSION \
   --set clusterName=$CLUSTER \

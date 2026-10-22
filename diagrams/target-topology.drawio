@@ -136,7 +136,7 @@
         <mxCell id="admin-pc" value="관리자 PC" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#232F3E;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.client;" vertex="1" parent="1">
           <mxGeometry x="1260" y="1010" width="40" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="legend" value="SG ① ALB→노드 80 (LBC 자동)  ② 관리 EC2→API 443  ③ 클러스터 SG 자기 참조 (노드↔API)  ④ 노드→RDS 3306 (+NetworkPolicy: was만)" style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=middle;fillColor=#F5F5F5;strokeColor=#BDBDBD;spacing=8;" vertex="1" parent="1">
+        <mxCell id="legend" value="SG ① ALB→노드 80 (LBC 자동)  ② 관리 EC2→API 443  ③ 클러스터 SG 자기 참조 (노드↔API)  ④ pc-sg-node→RDS 3306 (+NetworkPolicy: was만)  ⑤ 관리 EC2→RDS 3306 (bootstrap.sql)&lt;br&gt;EKS API 퍼블릭 엔드포인트는 생성 중에만 작업자 IP /32로 열고 생성 직후 닫음 → 운영 중에는 프라이빗 전용" style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=middle;fillColor=#F5F5F5;strokeColor=#BDBDBD;spacing=8;" vertex="1" parent="1">
           <mxGeometry x="40" y="1005" width="1150" height="44" as="geometry" />
         </mxCell>
 
@@ -251,6 +251,23 @@
         </mxCell>
         <mxCell id="e-admin-ssm" value="세션·포트 포워딩" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="admin-pc" target="svc-ssm">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ec2-rds" value="3306 (bootstrap)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;entryX=0.25;entryY=1;" edge="1" parent="1" source="mgmt-ec2" target="rds-p">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="817" />
+              <mxPoint x="240" y="750" />
+              <mxPoint x="312" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-eks-cw" value="감사 로그" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="eni-c" target="svc-cw">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="829" />
+              <mxPoint x="1230" y="482" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
