@@ -1,0 +1,25 @@
+server {
+    listen 8080;
+    server_name _;
+    add_header X-App-Version "${APP_VERSION}" always;
+
+    # ALB 헬스체크 · k8s probe 용 — was/DB 상태와 무관하게 nginx 자체만 확인
+    location = /healthz { access_log off; default_type text/plain; return 200 "ok\n"; }
+
+    # 정적 파일은 web 이 직접 응답 (WAR 에서 꺼내 이미지에 넣음)
+    location /resources/ {
+        root /usr/share/nginx/html;
+        expires 1h;
+    }
+
+    # 나머지는 was Service 로 프록시 (클러스터 DNS 이름 'was')
+    location / {
+        proxy_pass http://was:8080;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout    60s;
+    }
+}

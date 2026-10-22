@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: web, namespace: petclinic, labels: { app: web } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: web } }
+  template:
+    metadata: { labels: { app: web } }
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: web } }
+      containers:
+        - name: nginx
+          image: ${ECR}/pc-web:${IMAGE_TAG}
+          env: [{ name: APP_VERSION, value: "${IMAGE_TAG}" }]
+          ports: [{ name: http, containerPort: 8080 }]
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { memory: 256Mi }
+          readinessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 5 }
+          livenessProbe:  { httpGet: { path: /healthz, port: http }, periodSeconds: 20 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: web, namespace: petclinic, labels: { app: web } }
+spec:
+  selector: { app: web }
+  ports: [{ name: http, port: 80, targetPort: http }]

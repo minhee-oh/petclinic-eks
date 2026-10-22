@@ -1,0 +1,25 @@
+# LBC 가 이 Ingress 를 보고 인터넷용 ALB(pc-alb) 를 만든다
+# target-type ip: ALB 가 노드를 거치지 않고 web Pod IP 로 바로 보낸다
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pc-ingress
+  namespace: petclinic
+  annotations:
+    alb.ingress.kubernetes.io/load-balancer-name: pc-alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/tags: Project=petclinic
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port: { number: 80 }

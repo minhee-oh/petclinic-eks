@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: was, namespace: petclinic, labels: { app: was } }
+spec:
+  replicas: 1          # 첫 기동에서 스키마 생성이 끝난 뒤 2개로 늘린다 (06-deploy.sh)
+  selector: { matchLabels: { app: was } }
+  template:
+    metadata: { labels: { app: was } }
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: was } }
+      containers:
+        - name: tomcat
+          image: ${ECR}/pc-was:${IMAGE_TAG}
+          ports:
+            - { name: http, containerPort: 8080 }
+          env:
+            - name: DB_HOST
+              valueFrom: { configMapKeyRef: { name: pc-db-config, key: DB_HOST } }
+            - name: DB_USER
+              valueFrom: { secretKeyRef: { name: pc-db-secret, key: DB_USER } }
+            - name: DB_PASS
+              valueFrom: { secretKeyRef: { name: pc-db-secret, key: DB_PASS } }
+          resources:
+            requests: { cpu: 500m, memory: 1Gi }
+            limits:   { memory: 1536Mi }
+          startupProbe:            # Tomcat 이 처음 뜰 때까지(최대 300초) 재시작하지 않음
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata: { name: was, namespace: petclinic, labels: { app: was } }
+spec:
+  selector: { app: was }
+  ports:
+    - { name: http, port: 8080, targetPort: http }
