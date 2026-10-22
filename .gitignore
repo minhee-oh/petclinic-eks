@@ -1,0 +1,24 @@
+.state.env
+app/
+docker/web/resources/
+docker/was/ROOT.war
+infra/cluster.yaml
+infra/lbc-iam-policy.json
+
+# 자격 증명·비밀 (절대 커밋 금지)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+.aws/
+credentials
+kubeconfig
+*.kubeconfig
+secrets/
+*.secret.*
+
+# 도구 캐시·로컬
+.trivy-cache/
+.claude/
+*.log

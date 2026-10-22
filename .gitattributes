@@ -1,0 +1,2 @@
+# Windows 에서 작성해도 리눅스 배스천에서 그대로 실행되도록 LF 고정
+* text=auto eol=lf
