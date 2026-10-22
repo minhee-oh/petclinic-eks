@@ -4,6 +4,7 @@ docker/web/resources/
 docker/was/ROOT.war
 infra/cluster.yaml
 infra/lbc-iam-policy.json
+infra/cluster.dry-run.yaml
 
 # 자격 증명·비밀 (절대 커밋 금지)
 .env
@@ -22,3 +23,6 @@ secrets/
 .trivy-cache/
 .claude/
 *.log
+
+# 스크립트 실행 로그 (stop.sh 판정 기록 등)
+logs/
