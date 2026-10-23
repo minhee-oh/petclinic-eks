@@ -1,275 +1,352 @@
-<mxfile host="app.diagrams.net">
-  <diagram id="target-topology" name="목표 토폴로지">
-    <mxGraphModel dx="1460" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1460" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- 그룹: 리전 · VPC · AZ -->
-        <mxCell id="region" value="ap-northeast-2 (서울)" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;html=1;whiteSpace=wrap;fontSize=12;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="20" y="60" width="1420" height="920" as="geometry" />
-        </mxCell>
-        <mxCell id="vpc" value="VPC 10.0.0.0/16" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc2;html=1;whiteSpace=wrap;fontSize=12;strokeColor=#8C4FFF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#8C4FFF;" vertex="1" parent="1">
-          <mxGeometry x="40" y="100" width="1160" height="860" as="geometry" />
-        </mxCell>
-        <mxCell id="az-a" value="AZ 2a" style="fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontColor=#147EBA;html=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="60" y="140" width="530" height="800" as="geometry" />
-        </mxCell>
-        <mxCell id="az-c" value="AZ 2c" style="fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontColor=#147EBA;html=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="610" y="140" width="530" height="800" as="geometry" />
-        </mxCell>
-
-        <!-- 서브넷 -->
-        <mxCell id="sn-pub-a" value="Public 10.0.0.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=30;fontColor=#248814;" vertex="1" parent="1">
-          <mxGeometry x="75" y="170" width="500" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-pub-c" value="Public 10.0.1.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=30;fontColor=#248814;" vertex="1" parent="1">
-          <mxGeometry x="625" y="170" width="500" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-app-a" value="App 10.0.10.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#00A4A6;fillColor=#E6F6F7;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;" vertex="1" parent="1">
-          <mxGeometry x="75" y="330" width="500" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-app-c" value="App 10.0.11.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#00A4A6;fillColor=#E6F6F7;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;" vertex="1" parent="1">
-          <mxGeometry x="625" y="330" width="500" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-db-a" value="DB 10.0.20.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#C925D1;fillColor=#F9EAFA;verticalAlign=top;align=left;spacingLeft=30;fontColor=#7D1A87;" vertex="1" parent="1">
-          <mxGeometry x="75" y="600" width="500" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-db-c" value="DB 10.0.21.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#C925D1;fillColor=#F9EAFA;verticalAlign=top;align=left;spacingLeft=30;fontColor=#7D1A87;" vertex="1" parent="1">
-          <mxGeometry x="625" y="600" width="500" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-mgmt-a" value="Mgmt 10.0.30.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FDF1E6;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" vertex="1" parent="1">
-          <mxGeometry x="75" y="760" width="500" height="145" as="geometry" />
-        </mxCell>
-        <mxCell id="sn-mgmt-c" value="Mgmt 10.0.31.0/24" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FDF1E6;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" vertex="1" parent="1">
-          <mxGeometry x="625" y="760" width="500" height="145" as="geometry" />
-        </mxCell>
-
-        <!-- 진입 -->
-        <mxCell id="users" value="사용자" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#232F3E;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;" vertex="1" parent="1">
-          <mxGeometry x="580" y="2" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="igw" value="IGW" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=top;align=left;verticalAlign=bottom;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.internet_gateway;" vertex="1" parent="1">
-          <mxGeometry x="580" y="80" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="alb" value="ALB" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.application_load_balancer;" vertex="1" parent="1">
-          <mxGeometry x="578" y="210" width="44" height="44" as="geometry" />
-        </mxCell>
-        <mxCell id="nat-a" value="NAT" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.nat_gateway;" vertex="1" parent="1">
-          <mxGeometry x="100" y="215" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="nat-c" value="NAT" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.nat_gateway;" vertex="1" parent="1">
-          <mxGeometry x="1062" y="215" width="40" height="40" as="geometry" />
-        </mxCell>
-
-        <!-- 노드 + Pod -->
-        <mxCell id="node-a" value="노드 xlarge" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ec2_instance_contents;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" vertex="1" parent="1">
-          <mxGeometry x="95" y="360" width="460" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="node-c" value="노드 xlarge" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ec2_instance_contents;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" vertex="1" parent="1">
-          <mxGeometry x="645" y="360" width="460" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="web-a" value="web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="330" y="405" width="90" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="was-a" value="was" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="450" y="405" width="90" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="web-c" value="web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="665" y="405" width="90" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="was-c" value="was" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="785" y="405" width="90" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="web-canary" value="web-canary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;dashed=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="665" y="480" width="90" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="was-canary" value="was-canary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;dashed=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="785" y="480" width="90" height="36" as="geometry" />
-        </mxCell>
-
-        <!-- DB -->
-        <mxCell id="rds-p" value="RDS MySQL&lt;br&gt;primary" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.rds;" vertex="1" parent="1">
-          <mxGeometry x="300" y="640" width="48" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="rds-s" value="RDS&lt;br&gt;standby" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;opacity=60;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.rds;" vertex="1" parent="1">
-          <mxGeometry x="960" y="640" width="48" height="48" as="geometry" />
-        </mxCell>
-
-        <!-- 관리 구역 -->
-        <mxCell id="mgmt-ec2" value="관리 EC2" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=none;dashed=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.instance2;" vertex="1" parent="1">
-          <mxGeometry x="120" y="805" width="48" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="eni-a" value="EKS API" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eks;" vertex="1" parent="1">
-          <mxGeometry x="490" y="805" width="48" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="eni-c" value="EKS API" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eks;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="805" width="48" height="48" as="geometry" />
-        </mxCell>
-
-        <!-- VPC 안, AZ 밖: S3 게이트웨이 엔드포인트 -->
-        <mxCell id="s3-gw" value="S3 GW&lt;br&gt;엔드포인트" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.endpoints;" vertex="1" parent="1">
-          <mxGeometry x="1152" y="230" width="36" height="36" as="geometry" />
-        </mxCell>
-
-        <!-- VPC 밖 AWS 서비스 -->
-        <mxCell id="svc-ecr" value="ECR" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="150" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="svc-s3" value="S3" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="228" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="svc-sm" value="Secrets Manager" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="306" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="svc-iam" value="Pod Identity" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="384" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="svc-cw" value="CloudWatch" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch_2;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="462" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="svc-ssm" value="Systems Manager" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.systems_manager;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="860" width="40" height="40" as="geometry" />
-        </mxCell>
-
-        <!-- 리전 밖 -->
-        <mxCell id="admin-pc" value="관리자 PC" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#232F3E;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.client;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="1010" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="legend" value="SG ① ALB→노드 80 (LBC 자동)  ② 관리 EC2→API 443  ③ 클러스터 SG 자기 참조 (노드↔API)  ④ pc-sg-node→RDS 3306 (+NetworkPolicy: was만)  ⑤ 관리 EC2→RDS 3306 (bootstrap.sql)&lt;br&gt;EKS API 퍼블릭 엔드포인트는 생성 중에만 작업자 IP /32로 열고 생성 직후 닫음 → 운영 중에는 프라이빗 전용" style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=middle;fillColor=#F5F5F5;strokeColor=#BDBDBD;spacing=8;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1005" width="1150" height="44" as="geometry" />
-        </mxCell>
-
-        <!-- 연결: 인바운드 -->
-        <mxCell id="e-users-igw" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#232F3E;" edge="1" parent="1" source="users" target="igw">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-igw-alb" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#232F3E;" edge="1" parent="1" source="igw" target="alb">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-alb-weba" value="80" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="alb" target="web-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-alb-webc" value="80" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="alb" target="web-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-alb-canary" value="10%" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="alb" target="web-canary">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-weba-wasa" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#6C8EBF;" edge="1" parent="1" source="web-a" target="was-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-webc-wasc" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#6C8EBF;" edge="1" parent="1" source="web-c" target="was-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;" edge="1" parent="1" source="web-canary" target="was-canary">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 연결: DB -->
-        <mxCell id="e-wasa-rds" value="3306" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="was-a" target="rds-p">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="495" y="540" />
-              <mxPoint x="324" y="540" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-wasc-rds" value="3306" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.75;entryY=0;" edge="1" parent="1" source="was-c" target="rds-p">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="900" y="423" />
-              <mxPoint x="900" y="590" />
-              <mxPoint x="336" y="590" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-canary-rds" value="3306" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=1;entryY=0.25;" edge="1" parent="1" source="was-canary" target="rds-p">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="830" y="652" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-rds-repl" value="동기 복제" style="html=1;endArrow=block;startArrow=block;strokeColor=#C925D1;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.85;entryX=0;entryY=0.85;" edge="1" parent="1" source="rds-p" target="rds-s">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 연결: 아웃바운드 (NAT · S3 엔드포인트) -->
-        <mxCell id="e-nodea-nat" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.054;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="node-a" target="nat-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-nodec-nat" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.946;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="node-c" target="nat-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-nata-igw" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.5;exitY=0;entryX=0;entryY=0.75;" edge="1" parent="1" source="nat-a" target="igw">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="120" y="165" />
-              <mxPoint x="560" y="165" />
-              <mxPoint x="560" y="110" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-natc-igw" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.5;exitY=0;entryX=1;entryY=0.75;" edge="1" parent="1" source="nat-c" target="igw">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1082" y="165" />
-              <mxPoint x="660" y="165" />
-              <mxPoint x="660" y="110" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-s3gw-s3" style="html=1;endArrow=block;strokeColor=#7AA116;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s3-gw" target="svc-s3">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 연결: 관리 경로 -->
-        <mxCell id="e-ec2-api" value="443" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mgmt-ec2" target="eni-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-nodea-api" value="443" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.87;exitY=1;entryX=0.25;entryY=0;" edge="1" parent="1" source="node-a" target="eni-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-api-nodea" value="웹훅" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=0;entryX=0.96;entryY=1;" edge="1" parent="1" source="eni-a" target="node-a">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-nodec-api" value="443" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.95;exitY=1;entryX=0.75;entryY=0;" edge="1" parent="1" source="node-c" target="eni-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-api-nodec" value="웹훅" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=0;entryX=0.88;entryY=1;" edge="1" parent="1" source="eni-c" target="node-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-ec2-ssm" value="443 (NAT 경유)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="mgmt-ec2" target="svc-ssm">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="144" y="925" />
-              <mxPoint x="1230" y="925" />
-              <mxPoint x="1230" y="880" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-admin-ssm" value="세션·포트 포워딩" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="admin-pc" target="svc-ssm">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-ec2-rds" value="3306 (bootstrap)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;entryX=0.25;entryY=1;" edge="1" parent="1" source="mgmt-ec2" target="rds-p">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="240" y="817" />
-              <mxPoint x="240" y="750" />
-              <mxPoint x="312" y="750" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-eks-cw" value="감사 로그" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="eni-c" target="svc-cw">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1230" y="829" />
-              <mxPoint x="1230" y="482" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="65bd71144e">
+    <diagram id="target-topology" name="목표 토폴로지">
+        <mxGraphModel dx="539" dy="319" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1460" pageHeight="1080" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="region" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;html=1;whiteSpace=wrap;fontSize=12;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;dashed=1;" value="ap-northeast-2 (서울)" vertex="1">
+                    <mxGeometry height="920" width="1420" x="20" y="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="vpc" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc2;html=1;whiteSpace=wrap;fontSize=12;strokeColor=#8C4FFF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#8C4FFF;" value="VPC 10.0.0.0/16" vertex="1">
+                    <mxGeometry height="860" width="1160" x="40" y="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="az-a" parent="1" style="fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontColor=#147EBA;html=1;fontSize=11;" value="AZ 2a" vertex="1">
+                    <mxGeometry height="800" width="530" x="60" y="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="az-c" parent="1" style="fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontColor=#147EBA;html=1;fontSize=11;" value="AZ 2c" vertex="1">
+                    <mxGeometry height="800" width="530" x="610" y="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-pub-a" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=30;fontColor=#248814;" value="Public 10.0.0.0/24" vertex="1">
+                    <mxGeometry height="140" width="500" x="75" y="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-pub-c" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=30;fontColor=#248814;" value="Public 10.0.1.0/24" vertex="1">
+                    <mxGeometry height="140" width="500" x="625" y="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-app-a" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#00A4A6;fillColor=#E6F6F7;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;" value="App 10.0.10.0/24" vertex="1">
+                    <mxGeometry height="250" width="500" x="75" y="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-app-c" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#00A4A6;fillColor=#E6F6F7;verticalAlign=top;align=left;spacingLeft=30;fontColor=#147EBA;" value="App 10.0.11.0/24" vertex="1">
+                    <mxGeometry height="250" width="500" x="625" y="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-db-a" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#C925D1;fillColor=#F9EAFA;verticalAlign=top;align=left;spacingLeft=30;fontColor=#7D1A87;" value="DB 10.0.20.0/24" vertex="1">
+                    <mxGeometry height="140" width="500" x="75" y="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-db-c" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#C925D1;fillColor=#F9EAFA;verticalAlign=top;align=left;spacingLeft=30;fontColor=#7D1A87;" value="DB 10.0.21.0/24" vertex="1">
+                    <mxGeometry height="140" width="500" x="625" y="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-mgmt-a" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FDF1E6;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" value="Mgmt 10.0.30.0/24" vertex="1">
+                    <mxGeometry height="145" width="500" x="75" y="760" as="geometry"/>
+                </mxCell>
+                <mxCell id="sn-mgmt-c" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=0;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FDF1E6;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" value="Mgmt 10.0.31.0/24" vertex="1">
+                    <mxGeometry height="145" width="500" x="625" y="760" as="geometry"/>
+                </mxCell>
+                <mxCell id="users" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#232F3E;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;" value="사용자" vertex="1">
+                    <mxGeometry height="40" width="40" x="580" y="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="igw" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=top;align=left;verticalAlign=bottom;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.internet_gateway;" value="IGW" vertex="1">
+                    <mxGeometry height="40" width="40" x="580" y="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="alb" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.application_load_balancer;" value="ALB&lt;br&gt;← Gateway · HTTPRoute&lt;br&gt;(90:10 · x-canary)" vertex="1">
+                    <mxGeometry height="44" width="44" x="578" y="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="nat-a" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.nat_gateway;" value="NAT" vertex="1">
+                    <mxGeometry height="40" width="40" x="100" y="215" as="geometry"/>
+                </mxCell>
+                <mxCell id="nat-c" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.nat_gateway;" value="NAT" vertex="1">
+                    <mxGeometry height="40" width="40" x="1062" y="215" as="geometry"/>
+                </mxCell>
+                <mxCell id="node-a" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ec2_instance_contents;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" value="노드 m7i-flex.xlarge" vertex="1">
+                    <mxGeometry height="200" width="460" x="95" y="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="node-c" parent="1" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ec2_instance_contents;html=1;fontSize=11;strokeColor=#ED7100;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=30;fontColor=#A34E00;" value="노드 m7i-flex.xlarge" vertex="1">
+                    <mxGeometry height="200" width="460" x="645" y="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="k8s-node-a" parent="1" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=node" value="" vertex="1">
+                    <mxGeometry height="30" width="31" x="519" y="364" as="geometry"/>
+                </mxCell>
+                <mxCell id="k8s-node-c" parent="1" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=node" value="" vertex="1">
+                    <mxGeometry height="30" width="31" x="1069" y="364" as="geometry"/>
+                </mxCell>
+                <mxCell id="hpa" parent="1" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=top;verticalAlign=bottom;labelBackgroundColor=#FFFFFF;fillColor=#9673A6;strokeColor=#ffffff;fontColor=#5B3F78;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=hpa" value="HPA · CPU 50%&lt;br&gt;web·was 2~4" vertex="1">
+                    <mxGeometry height="48" width="50" x="575" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-hpa-wasa" edge="1" parent="1" source="hpa" style="html=1;endArrow=block;strokeColor=#9673A6;dashed=1;exitX=0;exitY=0.24;entryX=1;entryY=0.25;" target="was-a">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-hpa-webc" edge="1" parent="1" source="hpa" style="html=1;endArrow=block;strokeColor=#9673A6;dashed=1;exitX=1;exitY=0.48;entryX=0;entryY=0.5;" target="web-c">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-hpa-weba" edge="1" parent="1" source="hpa" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;dashed=1;exitX=0.2;exitY=1;entryX=0.5;entryY=1;" target="web-a">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="585" y="470"/>
+                            <mxPoint x="365" y="470"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-hpa-wasc" edge="1" parent="1" source="hpa" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;dashed=1;exitX=0.8;exitY=1;entryX=0.5;entryY=1;" target="was-c">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="615" y="470"/>
+                            <mxPoint x="825" y="470"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-ms-hpa" edge="1" parent="1" source="ms-pod" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;dashed=1;fontSize=9;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" target="hpa" value="지표">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="921" y="545"/>
+                            <mxPoint x="600" y="545"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="lbc-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="LBC 1/2" vertex="1">
+                    <mxGeometry height="40" width="42" x="240" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="eso-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="ESO → Secret app-db" vertex="1">
+                    <mxGeometry height="40" width="42" x="1010" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="ms-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="metrics-server" vertex="1">
+                    <mxGeometry height="40" width="42" x="900" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="lbc-pod-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="LBC 2/2" vertex="1">
+                    <mxGeometry height="40" width="42" x="920" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="pia-a" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="Pod Identity&lt;br&gt;Agent (DS)" vertex="1">
+                    <mxGeometry height="40" width="42" x="140" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="coredns-a" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="CoreDNS" vertex="1">
+                    <mxGeometry height="40" width="42" x="140" y="490" as="geometry"/>
+                </mxCell>
+                <mxCell id="pia-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="Pod Identity&lt;br&gt;Agent (DS)" vertex="1">
+                    <mxGeometry height="40" width="42" x="970" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="coredns-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="CoreDNS" vertex="1">
+                    <mxGeometry height="40" width="42" x="1045" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="web-a" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;fontSize=11;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="web ×2~4" vertex="1">
+                    <mxGeometry height="48" width="50" x="340" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="was-a" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;fontSize=11;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="was ×2~4" vertex="1">
+                    <mxGeometry height="48" width="50" x="460" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="web-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;fontSize=11;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="web ×2~4" vertex="1">
+                    <mxGeometry height="48" width="50" x="680" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="was-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;fontSize=11;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="was ×2~4" vertex="1">
+                    <mxGeometry height="48" width="50" x="800" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="web-canary" parent="1" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#D6B656;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="web-canary" vertex="1">
+                    <mxGeometry height="40" width="42" x="684" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="was-canary" parent="1" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#D6B656;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="was-canary" vertex="1">
+                    <mxGeometry height="40" width="42" x="804" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="rds-p" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.rds;" value="RDS MySQL&lt;br&gt;primary" vertex="1">
+                    <mxGeometry height="48" width="48" x="300" y="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="rds-s" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;opacity=60;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.rds;" value="RDS&lt;br&gt;standby" vertex="1">
+                    <mxGeometry height="48" width="48" x="960" y="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="mgmt-ec2" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=none;dashed=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.instance2;" value="관리 EC2" vertex="1">
+                    <mxGeometry height="48" width="48" x="120" y="805" as="geometry"/>
+                </mxCell>
+                <mxCell id="eni-a" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eks;" value="EKS API" vertex="1">
+                    <mxGeometry height="48" width="48" x="490" y="805" as="geometry"/>
+                </mxCell>
+                <mxCell id="eni-c" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eks;" value="EKS API" vertex="1">
+                    <mxGeometry height="48" width="48" x="1040" y="805" as="geometry"/>
+                </mxCell>
+                <mxCell id="s3-gw" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.endpoints;" value="S3 GW&lt;br&gt;엔드포인트" vertex="1">
+                    <mxGeometry height="36" width="36" x="1152" y="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-ecr" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" value="ECR" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-s3" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" value="S3" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="228" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-sm" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;" value="Secrets Manager" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="306" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-iam" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;" value="Pod Identity" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="384" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-cw" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch_2;" value="CloudWatch" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="462" as="geometry"/>
+                </mxCell>
+                <mxCell id="svc-ssm" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.systems_manager;" value="Systems Manager" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="860" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-pc" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;fillColor=#232F3E;strokeColor=none;dashed=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;html=1;fontSize=11;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.client;" value="관리자 PC" vertex="1">
+                    <mxGeometry height="40" width="40" x="1260" y="1010" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-users-igw" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#232F3E;" target="igw">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-igw-alb" edge="1" parent="1" source="igw" style="fontSize=10;labelBackgroundColor=#FFFFFF;fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#232F3E;" target="alb" value="① HTTP :80">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-alb-weba" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" target="web-a" value="② Pod IP :80 (Service web)">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-alb-webc" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;" target="web-c" value="② Pod IP :80 (Service web)">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-alb-canary" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="web-canary" value="10%">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="600" y="300"/>
+                            <mxPoint x="660" y="300"/>
+                            <mxPoint x="660" y="498"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-weba-wasa" edge="1" parent="1" source="web-a" style="fontSize=9;fontStyle=1;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#6C8EBF;" target="was-a" value="③ Service was :8080">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-webc-wasc" edge="1" parent="1" source="web-c" style="fontSize=9;fontStyle=1;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#6C8EBF;" target="was-c" value="③ Service was :8080">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-canary" edge="1" parent="1" source="web-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;" target="was-canary">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-wasa-rds" edge="1" parent="1" source="was-a" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" target="rds-p" value="④ db (ExternalName) · JDBC 3306">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="530" y="424"/>
+                            <mxPoint x="530" y="540"/>
+                            <mxPoint x="324" y="540"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-wasc-rds" edge="1" parent="1" source="was-c" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.75;entryY=0;" target="rds-p" value="④ db (ExternalName) · JDBC 3306">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="880" y="424"/>
+                            <mxPoint x="880" y="590"/>
+                            <mxPoint x="336" y="590"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-canary-rds" edge="1" parent="1" source="was-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=1;entryY=0.25;" target="rds-p" value="3306">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="865" y="498"/>
+                            <mxPoint x="865" y="652"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-rds-repl" edge="1" parent="1" source="rds-p" style="html=1;endArrow=block;startArrow=block;strokeColor=#C925D1;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.85;entryX=0;entryY=0.85;" target="rds-s" value="동기 복제">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-nodea-nat" edge="1" parent="1" source="node-a" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.054;exitY=0;entryX=0.5;entryY=1;" target="nat-a">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-nodec-nat" edge="1" parent="1" source="node-c" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.946;exitY=0;entryX=0.5;entryY=1;" target="nat-c">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-nata-igw" edge="1" parent="1" source="nat-a" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.5;exitY=0;entryX=0;entryY=0.75;" target="igw">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="120" y="165"/>
+                            <mxPoint x="560" y="165"/>
+                            <mxPoint x="560" y="110"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-natc-igw" edge="1" parent="1" source="nat-c" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;dashed=1;exitX=0.5;exitY=0;entryX=1;entryY=0.75;" target="igw">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1082" y="165"/>
+                            <mxPoint x="660" y="165"/>
+                            <mxPoint x="660" y="110"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-s3gw-s3" edge="1" parent="1" source="s3-gw" style="html=1;endArrow=block;strokeColor=#7AA116;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="svc-s3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-ec2-api" edge="1" parent="1" source="mgmt-ec2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;" target="eni-a" value="443">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-nodea-api" edge="1" parent="1" source="node-a" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.87;exitY=1;entryX=0.25;entryY=0;" target="eni-a" value="443">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-api-nodea" edge="1" parent="1" source="eni-a" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=0;entryX=0.96;entryY=1;" target="node-a" value="웹훅">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-nodec-api" edge="1" parent="1" source="node-c" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.95;exitY=1;entryX=0.75;entryY=0;" target="eni-c" value="443">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-api-nodec" edge="1" parent="1" source="eni-c" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=0;entryX=0.88;entryY=1;" target="node-c" value="웹훅">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-ec2-ssm" edge="1" parent="1" source="mgmt-ec2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="svc-ssm" value="443 (NAT 경유)">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="144" y="925"/>
+                            <mxPoint x="1230" y="925"/>
+                            <mxPoint x="1230" y="880"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-admin-ssm" edge="1" parent="1" source="admin-pc" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;" target="svc-ssm" value="세션·포트 포워딩">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-ec2-rds" edge="1" parent="1" source="mgmt-ec2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#ED7100;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;entryX=0.25;entryY=1;" target="rds-p" value="3306 (bootstrap)">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="240" y="817"/>
+                            <mxPoint x="240" y="750"/>
+                            <mxPoint x="312" y="750"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-eks-cw" edge="1" parent="1" source="eni-c" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#E7157B;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="svc-cw" value="감사 로그">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1230" y="829"/>
+                            <mxPoint x="1230" y="482"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-lbc-alb" edge="1" parent="1" source="lbc-pod" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#7F8C8D;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;entryX=0;entryY=0.5;" target="alb" value="Gateway 조정 → ALB·대상 그룹 생성">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="261" y="290"/>
+                            <mxPoint x="560" y="290"/>
+                            <mxPoint x="560" y="232"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-sm-eso" edge="1" parent="1" source="svc-sm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#7F8C8D;dashed=1;fontSize=9;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="eso-pod" value="비밀 동기화">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1213" y="326"/>
+                            <mxPoint x="1213" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-iam-eso" edge="1" parent="1" source="svc-iam" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#7F8C8D;dashed=1;fontSize=9;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" target="eso-pod" value="역할 (Pod Identity)">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1225" y="404"/>
+                            <mxPoint x="1225" y="350"/>
+                            <mxPoint x="1031" y="350"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e-iam-lbc" edge="1" parent="1" source="svc-iam" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#7F8C8D;dashed=1;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" target="lbc-pod-c">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1225" y="404"/>
+                            <mxPoint x="1225" y="350"/>
+                            <mxPoint x="941" y="350"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
 </mxfile>

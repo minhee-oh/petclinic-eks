@@ -1,7 +1,7 @@
 #!/bin/bash
 # 매일 작업 종료 — 기획서 3.2 중지 순서
 #   ① 앱 replicas 기록(주석) → 0   ② 노드 그룹 0 → 15분 판정   ③ RDS 중지   ④ 관리 EC2 중지(터널 경로라 마지막)
-# 밤사이에도 과금: EKS 컨트롤 플레인, NAT 2개, ALB, EIP, RDS 스토리지
+# 밤사이에도 과금(유지, 작업지시서 0-1): EKS 컨트롤 플레인, NAT 2개, EIP 2개, ALB, RDS 스토리지
 set -euo pipefail
 source "$(dirname "$0")/../env.sh"
 require_aws 40
@@ -83,3 +83,4 @@ fi
 tunnel_down
 aws ec2 stop-instances --instance-ids $MGMT_ID >/dev/null
 log "관리 EC2 중지 요청. 전체 중지 완료: $(date '+%F %T')"
+log "밤에도 과금되는 유지 항목(정리 때만 삭제): EKS 컨트롤 플레인 · NAT 2개 · EIP 2개 · ALB(있으면) · RDS 스토리지"

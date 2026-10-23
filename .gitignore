@@ -26,3 +26,6 @@ secrets/
 
 # 스크립트 실행 로그 (stop.sh 판정 기록 등)
 logs/
+
+# 증빙 덤프 (80-evidence.sh, 마스킹 검사 통과분만 보고서에 사용)
+evidence/
