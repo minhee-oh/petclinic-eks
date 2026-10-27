@@ -1,6 +1,21 @@
+# was 로 가는 연결을 재사용한다 (1.0.3) — 없으면 요청마다 새 TCP 연결을 열고 닫아 TIME_WAIT 이 쌓이고,
+# 부하(Pod 당 수백 rps)에서 임시 포트가 바닥나 connect() failed (99: Address not available) → 502 (V3 실측 3.5%)
+# 유휴 유지 15초 < Tomcat keepAliveTimeout 20초(기본) — Tomcat 이 먼저 끊은 연결을 nginx 가 재사용하는 경합 방지
+# 1.0.4: 업스트림 이름을 환경 변수로 — stable 은 was(Dockerfile 기본값), 카나리 web 은 was-canary (k8s/45-canary.yaml)
+upstream was_backend {
+    server ${WAS_UPSTREAM}:8080;
+    keepalive 32;
+    keepalive_timeout 15s;
+    keepalive_requests 100;   # Tomcat maxKeepAliveRequests 기본 100 과 맞춤
+}
+
+# 요청마다 실제로 간 was Pod 주소를 남긴다 — 카나리 요청이 was-canary 까지 갔는지 로그로 확인 (클라이언트에는 내보내지 않음)
+log_format upstream '$remote_addr [$time_local] "$request" $status upstream=$upstream_addr';
+
 server {
     listen 8080;
     server_name _;
+    access_log /dev/stdout upstream;
     add_header X-App-Version "${APP_VERSION}" always;
 
     # ALB 헬스체크 · k8s probe 용 — was/DB 상태와 무관하게 nginx 자체만 확인
@@ -14,7 +29,9 @@ server {
 
     # 나머지는 was Service 로 프록시 (클러스터 DNS 이름 'was')
     location / {
-        proxy_pass http://was:8080;
+        proxy_pass http://was_backend;
+        proxy_http_version 1.1;              # upstream keepalive 는 HTTP/1.1 + Connection 헤더 비우기가 필요
+        proxy_set_header Connection        "";
         proxy_set_header Host              $host;
         proxy_set_header X-Real-IP         $remote_addr;
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
