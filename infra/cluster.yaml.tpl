@@ -50,6 +50,8 @@ addons:
   - name: coredns
   - name: kube-proxy
   - name: eks-pod-identity-agent
+  # eksctl 기본 애드온에 기대지 않고 명시 — 10/26 생성이 중간에 끊겨 빠진 일(트러블슈팅)
+  - name: metrics-server
 
 # Pod 단위 IAM 은 Pod Identity (IRSA·OIDC 공급자 없음). 서비스 계정은 각 Helm 차트가 만든다
 iam:

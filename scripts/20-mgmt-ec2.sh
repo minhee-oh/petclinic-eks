@@ -27,7 +27,8 @@ fi
 # ── 인스턴스 ────────────────────────────────────────
 MGMT_ID=$(ec2_id instance $MGMT_NAME)
 if [ -z "$MGMT_ID" ]; then
-  AMI=$(aws ssm get-parameter --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  # Git Bash 는 '/'로 시작하는 인자를 Windows 경로로 바꿔 넘긴다 → MSYS_NO_PATHCONV=1 (10/26 재구축 실측: ParameterNotFound)
+  AMI=$(MSYS_NO_PATHCONV=1 aws ssm get-parameter --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
     --query Parameter.Value --output text)
   # 도구(kubectl·helm·eksctl·trivy)는 버전·체크섬 고정이 필요해 user-data 가 아니라 별도 스크립트로 설치
   USER_DATA='#!/bin/bash
@@ -35,7 +36,7 @@ dnf install -y docker git jq mariadb105
 systemctl enable --now docker'
   # 새로 만든 인스턴스 프로파일은 IAM 전파에 수 초가 걸린다 → 재시도
   for i in 1 2 3 4 5 6; do
-    MGMT_ID=$(aws ec2 run-instances --image-id $AMI --instance-type $MGMT_TYPE \
+    MGMT_ID=$(MSYS_NO_PATHCONV=1 aws ec2 run-instances --image-id $AMI --instance-type $MGMT_TYPE \
       --subnet-id $SUBNET_MGMT_A --security-group-ids $SG_MGMT --no-associate-public-ip-address \
       --iam-instance-profile Name=$PROFILE \
       --metadata-options HttpTokens=required,HttpEndpoint=enabled \

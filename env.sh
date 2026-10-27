@@ -8,6 +8,7 @@ export PC_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # 리전·AZ
 export AWS_REGION=ap-northeast-2
 export AWS_DEFAULT_REGION=$AWS_REGION
+export PYTHONUTF8=1   # Windows AWS CLI 는 출력을 cp949 로 써서 UTF-8 이 섞이면 실패한다(3-5 트러블슈팅)
 export AZ_A=ap-northeast-2a
 export AZ_C=ap-northeast-2c
 
@@ -24,7 +25,7 @@ export LBC_VERSION=v3.5.0          # IAM 정책·CRD 경로도 이 태그
 export LBC_CHART_VERSION=3.5.0
 export GATEWAY_API_VERSION=v1.6.0
 export METRICS_SERVER_VERSION=v0.9.0
-export ESO_CHART_VERSION=${ESO_CHART_VERSION:-}   # 3일차 설치 때 고정해 여기에 기록
+export ESO_CHART_VERSION=2.12.0   # 2026-10-06 릴리스 — 최신(2.14.0, 10-23)은 2주가 안 돼 제외 (3일차 고정)
 
 # 네트워크 (기획서 2.1) — 4구역 × AZ 2개
 export VPC_CIDR=10.0.0.0/16
@@ -38,8 +39,8 @@ export NODE_TYPE=m7i-flex.xlarge
 export NODE_COUNT=2               # AZ마다 1대 고정 (N+1)
 export NODE_MAX=3                 # 노드 롤링 교체 여유 1대
 export MGMT_TYPE=t3.medium
-export RDS_CLASS=db.t4g.micro
-export RDS_ENGINE_VERSION=8.4
+export RDS_CLASS=db.m8g.large     # 운영 기준 — 버스터블(t) 제외 (기획-토론 2026-10-23)
+export RDS_ENGINE_VERSION=8.4.11
 export RDS_STORAGE_GB=20
 export DB_NAME=petclinic
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# 클러스터 애드온 — Gateway API CRD v1.6.0 · LBC(Helm 3.5.0) · metrics-server v0.9.0
+# 클러스터 애드온 — Gateway API CRD v1.6.0 · LBC(Helm 3.5.0) · metrics-server(EKS 애드온, 확인만)
 # LBC 의 IAM 역할은 cluster.yaml 의 podIdentityAssociations 가 이미 연결했다 (IRSA 아님)
 # 순서: 30-cluster.sh 가 엔드포인트를 프라이빗 전용으로 닫은 "뒤"에 실행한다
 #   → 쿠버네티스 API 는 로컬이면 터널(tunnel_up 이 자동으로 엶), 관리 EC2 면 PC_KUBE_DIRECT=1
@@ -31,9 +31,7 @@ helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-contro
   --set serviceAccount.name=aws-load-balancer-controller \
   --wait --timeout 5m
 
-# ── metrics-server (HPA·kubectl top) ────────────────
-kubectl apply -f \
-  https://github.com/kubernetes-sigs/metrics-server/releases/download/$METRICS_SERVER_VERSION/components.yaml
+# ── metrics-server — eksctl 이 EKS 관리형 애드온으로 설치함(30-cluster.sh). 매니페스트로 덮어쓰지 않는다 ──
 kubectl rollout status deploy/metrics-server -n kube-system --timeout=180s
 
 kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller

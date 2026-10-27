@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "untagged images: delete after 1 day",
+      "selection": {"tagStatus": "untagged", "countType": "sinceImagePushed", "countUnit": "days", "countNumber": 1},
+      "action": {"type": "expire"}
+    },
+    {
+      "rulePriority": 2,
+      "description": "keep the latest 10 images (rollback window)",
+      "selection": {"tagStatus": "any", "countType": "imageCountMoreThan", "countNumber": 10},
+      "action": {"type": "expire"}
+    }
+  ]
+}

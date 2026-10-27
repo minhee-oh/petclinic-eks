@@ -68,7 +68,7 @@ if ! aws iam get-policy --policy-arn arn:aws:iam::$ACCOUNT_ID:policy/pc-policy-l
   curl -fsSL -o "$PC_HOME/infra/lbc-iam-policy.json" \
     https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/$LBC_VERSION/docs/install/iam_policy.json
   aws iam create-policy --policy-name pc-policy-lbc --tags $(tags_kv) \
-    --policy-document "file://$PC_HOME/infra/lbc-iam-policy.json" >/dev/null
+    --policy-document "file://$(cygpath -m "$PC_HOME/infra/lbc-iam-policy.json")" >/dev/null   # Windows AWS CLI 는 /c/... 를 못 읽는다(10/26 실측) → C:/...
   log "pc-policy-lbc 생성 ($LBC_VERSION 태그 정책)"
 fi
 # ESO 는 이 프로젝트 비밀(pc/petclinic/*)만 읽는다. RDS master 비밀(rds!...)은 범위 밖 = 클러스터에 들어오지 않음
@@ -140,7 +140,7 @@ NODES=$(aws ec2 describe-instances \
 [ -n "$NODES" ] || die "실행 중인 노드가 없음"
 for i in $NODES; do
   sgs=$(aws ec2 describe-instances --instance-ids $i \
-    --query 'Reservations[0].Instances[0].NetworkInterfaces[?Attachment.DeviceIndex==`0`].Groups[].GroupId' --output text)
+    --query 'Reservations[0].Instances[0].NetworkInterfaces[?Attachment.DeviceIndex==`0`].Groups[].GroupId' --output text | xargs)   # 탭 구분 → 공백 (아래 " $sgs " 비교용)
   echo "$i: $sgs"
   [[ " $sgs " == *" $CLUSTER_SG "* ]] || die "$i 에 클러스터 SG($CLUSTER_SG) 없음 — 원칙 위반. 노드 그룹 SG 설정 재검토 후 진행"
   [[ " $sgs " == *" $SG_NODE "* ]]    || die "$i 에 pc-sg-node($SG_NODE) 없음 — RDS 접속 불가"
