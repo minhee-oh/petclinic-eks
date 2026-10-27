@@ -1,7 +1,7 @@
 #!/bin/bash
 # RDS MySQL 8.4 — private-db a·c, Multi-AZ, 삭제 방지·백업 7일·저장 암호화·전송 TLS 강제 (기획서 2.3)
 # master 비밀번호는 스크립트가 만들지 않는다 → RDS 가 Secrets Manager 에 직접 관리(--manage-master-user-password)
-# 생성에 20~30분 걸리므로 기다리지 않고 끝낸다. 다른 작업과 병렬로 진행 (작업지시서 2-3)
+# 생성에 20~30분 걸리므로 기다리지 않고 끝낸다. 다른 작업과 병렬로 진행
 set -euo pipefail
 source "$(dirname "$0")/../env.sh"
 require_aws 15

@@ -94,7 +94,7 @@ tunnel_up() {
   [ "${PC_KUBE_DIRECT:-0}" = 1 ] && return 0
   (echo > /dev/tcp/127.0.0.1/8443) 2>/dev/null && return 0
   tunnel_down   # 끊긴 이전 세션 프로세스 정리
-  command -v session-manager-plugin >/dev/null || die "Session Manager 플러그인 없음 (작업지시서 2-6)"
+  command -v session-manager-plugin >/dev/null || die "Session Manager 플러그인 없음 (설치 필요)"
   local ep host
   ep=$(aws eks describe-cluster --name "$CLUSTER" --query cluster.endpoint --output text)
   host=${ep#https://}

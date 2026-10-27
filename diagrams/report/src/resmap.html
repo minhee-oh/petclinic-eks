@@ -1,0 +1,104 @@
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b0b0b;--ink2:#52514e;--mut:#8a8984;--line:#c9c8c2;--blue:#2a78d6;--blueT:#eaf2fc;--gray:#f4f3f0;--aws:#fdf3e7;--awsB:#e3a35a;--crit:#d03b3b;--green:#0b7a3b}
+body{margin:0;background:#fff;font-family:'Noto Sans KR',sans-serif;color:var(--ink)}
+#fig{position:relative;width:1460px;height:930px;background:#fff}
+h1{position:absolute;left:30px;top:18px;margin:0;font-size:23px}
+.sub{position:absolute;left:30px;top:54px;margin:0;font-size:14px;color:var(--ink2)}
+.zone{position:absolute;border:1.5px dashed var(--line);border-radius:14px}
+.zone>.zt{position:absolute;left:14px;top:-11px;background:#fff;padding:0 8px;font-size:13px;font-weight:700;color:var(--ink2)}
+.zone.ns{border:2px solid #9fbfe8;background:#fbfdff}.zone.ns>.zt{color:var(--blue)}
+.zone.awsz{border-color:var(--awsB);background:#fffaf3}.zone.awsz>.zt{color:#a5631c}
+.box{position:absolute;box-sizing:border-box;border:1.5px solid #b9b8b2;border-radius:10px;background:#fff;padding:8px 12px;font-size:13px;line-height:1.35}
+.box .k{font-size:11px;color:var(--mut);font-weight:500;letter-spacing:.2px}
+.box .n{font-size:15px;font-weight:700}
+.box .d{font-size:12px;color:var(--ink2);margin-top:2px}
+.box.aws{border-color:var(--awsB);background:var(--aws)}
+.box.ctrl{background:var(--gray);border-color:#b9b8b2}
+.box.dep{border-color:var(--blue);border-width:2px}
+.pods{display:flex;gap:6px;margin-top:6px}.pod{flex:1;border:1.5px solid var(--blue);background:var(--blueT);border-radius:6px;text-align:center;font-size:11.5px;padding:3px 0;color:#1c5cab;font-weight:500}
+.pod.ghost{border-style:dashed;background:#fff;color:var(--mut)}
+.chips{display:flex;gap:6px;margin-top:7px}.chip{font-size:11.5px;border-radius:999px;padding:1px 9px;background:var(--gray);border:1px solid #d6d5cf;color:var(--ink2)}
+svg#arrows{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.a{fill:none;stroke-width:2.2}.a.req{stroke:var(--blue)}.a.cfg{stroke:#8a8984;stroke-dasharray:6 5;stroke-width:1.6}
+.lbl{position:absolute;transform:translate(-50%,-50%);background:#fff;padding:0 5px;font-size:11.5px;white-space:nowrap;border-radius:4px}
+.lbl.req{color:#1c5cab;font-weight:700}.lbl.cfg{color:var(--ink2)}
+.legend{position:absolute;left:30px;bottom:18px;font-size:12.5px;color:var(--ink2);display:flex;gap:26px;align-items:center}
+.legend svg{vertical-align:middle;margin-right:6px}
+.np{position:absolute;box-sizing:border-box;border:1.5px solid #e0b3b3;background:#fff8f8;border-radius:10px;padding:9px 14px;font-size:12.5px;line-height:1.55}
+.np b{color:var(--crit)}
+</style></head><body><div id="fig" style="height:930px">
+<h1>클러스터 안 리소스 관계도 (네임스페이스 petclinic)</h1>
+<p class="sub">파란 실선은 사용자 요청이 실제로 지나가는 길, 회색 점선은 리소스끼리 참조하거나 컨트롤러가 만들고 채우는 관계다.</p>
+
+<div class="box aws" id="inet" style="left:30px;top:100px;width:180px;height:48px;text-align:center;padding-top:11px"><div class="n">인터넷 사용자</div></div>
+<div class="box aws" id="alb" style="left:30px;top:195px;width:180px;height:92px"><div class="k">AWS · public 서브넷</div><div class="n">ALB</div><div class="d">HTTP 80 · 대상 유형 ip<br>Pod IP 로 직접 전달</div></div>
+
+<div class="zone ns" style="left:250px;top:130px;width:1000px;height:570px"><span class="zt">namespace petclinic &nbsp;·&nbsp; PSS baseline 강제 · restricted 경고</span></div>
+
+<div class="box dep" id="depweb" style="left:280px;top:165px;width:240px;height:128px"><div class="k">Deployment</div><div class="n">web <span style="font-weight:400;font-size:12px;color:var(--ink2)">nginx :8080</span></div>
+ <div class="pods"><div class="pod">Pod 2a</div><div class="pod">Pod 2c</div><div class="pod ghost">최대 +2</div></div>
+ <div class="chips"><span class="chip">HPA 2~4 · CPU 50%</span><span class="chip">PDB 1</span></div></div>
+<div class="box" id="svcwas" style="left:575px;top:198px;width:140px;height:62px"><div class="k">Service · ClusterIP</div><div class="n">was</div></div>
+<div class="box dep" id="depwas" style="left:770px;top:165px;width:240px;height:128px"><div class="k">Deployment</div><div class="n">was <span style="font-weight:400;font-size:12px;color:var(--ink2)">Tomcat :8080</span></div>
+ <div class="pods"><div class="pod">Pod 2a</div><div class="pod">Pod 2c</div><div class="pod ghost">최대 +2</div></div>
+ <div class="chips"><span class="chip">HPA 2~4 · CPU 50%</span><span class="chip">PDB 1</span></div></div>
+<div class="box" id="svcdb" style="left:1060px;top:183px;width:165px;height:92px"><div class="k">Service · ExternalName</div><div class="n">db</div><div class="d">RDS 주소로 CNAME</div></div>
+
+<div class="box" id="svcweb" style="left:280px;top:355px;width:240px;height:62px"><div class="k">Service · ClusterIP</div><div class="n">web</div></div>
+<div class="box" id="tgc" style="left:560px;top:355px;width:170px;height:74px"><div class="k">TargetGroupConfiguration</div><div class="n">web</div><div class="d">ip · /healthz · 해제 30초</div></div>
+<div class="box" id="sec" style="left:770px;top:355px;width:240px;height:62px"><div class="k">Secret (ESO 가 만듦)</div><div class="n">app-db · migration-db</div></div>
+<div class="box" id="job" style="left:1060px;top:355px;width:165px;height:74px"><div class="k">Job (내용 해시당 1회)</div><div class="n">db-init</div><div class="d">스키마·초기 데이터</div></div>
+
+<div class="box" id="rt" style="left:280px;top:480px;width:240px;height:66px"><div class="k">HTTPRoute</div><div class="n">web <span style="font-weight:400;font-size:12px;color:var(--ink2)">/ → web:8080</span></div></div>
+<div class="box" id="es" style="left:770px;top:480px;width:240px;height:66px"><div class="k">ExternalSecret</div><div class="n">app-db · migration-db</div></div>
+<div class="box" id="ss" style="left:1060px;top:480px;width:165px;height:66px"><div class="k">SecretStore</div><div class="n">aws-sm</div></div>
+
+<div class="box" id="gw" style="left:280px;top:605px;width:240px;height:70px"><div class="k">Gateway</div><div class="n">petclinic</div><div class="d">class pc-alb · listener http:80</div></div>
+<div class="np" style="left:560px;top:600px;width:390px;height:86px;font-size:12px">
+<b>NetworkPolicy</b> &nbsp;기본 전부 차단 + DNS 허용 위에 4개만 연다<br>
+ALB 서브넷→web · web→was · was·db-init→DB 서브넷<br>
+<span style="color:var(--ink2)">DB 쪽은 서브넷 대역으로 적어 장애 조치·Proxy 전환에도 그대로</span></div>
+
+<div class="zone" style="left:250px;top:735px;width:1000px;height:110px"><span class="zt">컨트롤러 (kube-system · external-secrets 네임스페이스)</span></div>
+<div class="box ctrl" id="lbc" style="left:280px;top:760px;width:240px;height:66px"><div class="k">Helm · kube-system</div><div class="n" style="font-size:14px">AWS Load Balancer Controller</div></div>
+<div class="box ctrl" id="ms" style="left:560px;top:760px;width:300px;height:66px"><div class="k">EKS 애드온 · kube-system</div><div class="n">metrics-server <span style="font-weight:400;font-size:12px;color:var(--ink2)">→ 모든 HPA 에 CPU</span></div></div>
+<div class="box ctrl" id="eso" style="left:900px;top:760px;width:325px;height:66px"><div class="k">Helm · external-secrets</div><div class="n">External Secrets Operator</div></div>
+
+<div class="zone awsz" style="left:1280px;top:130px;width:160px;height:570px"><span class="zt">AWS 관리형</span></div>
+<div class="box aws" id="rds" style="left:1295px;top:170px;width:130px;height:120px"><div class="k">private-db 서브넷</div><div class="n">RDS MySQL</div><div class="d">8.4 · Multi-AZ<br>TLS 강제</div></div>
+<div class="box aws" id="proxy" style="left:1295px;top:600px;width:130px;height:66px" ><div class="k">5.1 실험 때만</div><div class="n">RDS Proxy</div></div>
+<div class="box aws" id="sm" style="left:1295px;top:480px;width:130px;height:66px"><div class="k">비밀 원본</div><div class="n" style="font-size:14px">Secrets Manager</div></div>
+
+<svg id="arrows"><defs>
+<marker id="m-req" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2a78d6"/></marker>
+<marker id="m-cfg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8a8984"/></marker>
+</defs></svg>
+<div class="legend"><span><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#2a78d6" stroke-width="2.2"/></svg>요청 흐름</span>
+<span><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#8a8984" stroke-width="1.6" stroke-dasharray="6 5"/></svg>참조·생성 관계</span>
+<span>출처: k8s/00~60 매니페스트 (2026-10-26 배포). 카나리(45-canary)는 생략</span></div>
+</div>
+<script src="common.js"></script>
+<script>
+document.fonts.ready.then(()=>draw([
+ ['inet','b','alb','t','req'],
+ ['alb','r','depweb','l','req','',0.5],
+ ['depweb','r','svcwas','l','req'],
+ ['svcwas','r','depwas','l','req'],
+ ['depwas','r','svcdb','l','req'],
+ ['svcdb','r','rds','l','req','DNS',0.45],
+ ['svcweb','t','depweb','b','cfg','엔드포인트 (Pod IP 목록)',0.5],
+ ['tgc','l','svcweb','r','cfg','',0.5],
+ ['rt','t','svcweb','b','cfg','backendRef',0.5],
+ ['gw','t','rt','b','cfg','parentRef',0.5],
+ ['lbc','t','gw','b','cfg','감시',0.5],
+ ['lbc','l','alb','b','cfg','ALB·대상 그룹 생성, Pod IP 등록',0.62],
+ ['eso','t','es','b100','cfg','동기화',0.25, 715],
+ ['es','t','sec','b','cfg','생성',0.5],
+ ['sec','t','depwas','b','cfg','env (비밀번호)',0.5],
+ ['es','r','ss','l','cfg'],
+ ['ss','r','sm','l','cfg','Pod Identity',0.5],
+ ['job','r','rds','b','cfg','pc_migration',0.2],
+]));
+</script></body></html>

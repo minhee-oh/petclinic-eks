@@ -1,7 +1,7 @@
 #!/bin/bash
 # 로컬 kubectl → SSM 포트 포워딩(localhost:8443) → 관리 EC2 → EKS 프라이빗 엔드포인트 443
 # 이 창을 열어 둔 동안만 kubectl 이 동작한다. 끝내려면 Ctrl+C.
-# 최초 1회 준비(🔒 승인 필요, 작업지시서 2-6):
+# 최초 1회 준비(🔒 승인 필요):
 #   1) Session Manager 플러그인 설치
 #   2) hosts 파일(C:\Windows\System32\drivers\etc\hosts)에 아래 출력되는 한 줄 추가 — 인증서가 엔드포인트 이름으로 발급돼서
 set -euo pipefail

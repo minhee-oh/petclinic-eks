@@ -1,84 +1,73 @@
 # PetClinic 3-Tier on Amazon EKS
 
-중간 프로젝트의 PetClinic 3-tier(Nginx → Tomcat → MySQL)를 EKS 위의 컨테이너로 옮긴 개인 프로젝트.
-web · was 는 각각 컨테이너(ECR), DB 는 Amazon RDS MySQL 로 둔다.
+spring-framework-petclinic(단일 WAR)을 web(nginx)·was(Tomcat) 컨테이너로 나눠 Amazon EKS 에 올리고, DB 는 RDS MySQL Multi-AZ 에 둔 1인 프로젝트다. 실제 운영 서비스로 가정하고 설계했고, 무중단 배포·자동 확장·DB 장애 조치를 측정으로 확인했다.
+
+**보고서**: [AWS EKS 기반 PetClinic 3티어 서비스 구축·운영 보고서](<NOTION_REPORT_URL>) — 설계 결정과 대안, 검증 V1~V9, 심화 실험, 운영·비용
+
+![클러스터 안 리소스 관계도](diagrams/report/fig-k8s-resources.png)
+
+## 핵심 결과
+
+- **부하**: 474,912건 실패 0, p95 92ms (초당 약 1,580 요청), HPA 2→4→2
+- **무중단**: 롤링 배포 3회와 노드 drain 중 요청 983건에서 200 아닌 응답 0
+- **DB 장애 조치**: 앱 영향 약 10초, Pod 재시작 0. 철거 후 스크립트만으로 약 1시간에 전체 재구축
+
+## 구성
 
 ```
-인터넷 ─▶ ALB (pc-alb, LBC Ingress, target-type ip)
-           │  퍼블릭 서브넷 2a/2c
-           ▼
-        web  Deployment ×2~6 (Nginx — 정적 파일 직접 응답, 나머지 프록시)   ┐
-           ▼  Service web:80 → was:8080                                       ├ 앱 서브넷 2a/2c (EKS 노드 ng-app)
-        was  Deployment ×2~4 (Tomcat 11 + ROOT.war)                          ┘
-           ▼  3306 (클러스터 SG 에서만 허용)
-        RDS MySQL 8.4 (pc-rds)                                                  DB 서브넷 2a/2c (인터넷 경로 없음)
+인터넷 → ALB (Gateway API, ip 대상) → web Pod (nginx) → was Pod (Tomcat 11)
+       → db Service (ExternalName) → RDS MySQL 8.4 Multi-AZ (private-db 서브넷)
 ```
 
-| 항목 | 값 |
+| 영역 | 내용 |
 |---|---|
-| 소스 | [spring-framework-petclinic](https://github.com/spring-petclinic/spring-framework-petclinic) main, `-PMySQL` |
-| 리전 | ap-northeast-2 (2a · 2c) |
-| EKS | `pc-eks` 1.36, 관리형 노드그룹 `ng-app` t3.large × 2 |
-| 이미지 | ECR `pc-web`, `pc-was` — 불변 태그 `1.0.0`, 푸시 시 스캔 |
-| DB | `pc-rds` MySQL 8.4 db.t3.small, 비밀번호는 RDS 가 Secrets Manager 에 생성·보관 |
-| 확장 | HPA (web CPU 60%, was CPU 70%) + PDB |
+| 네트워크 | VPC 1개, AZ 2개 × 서브넷 4종(public·app·db·mgmt), AZ 마다 NAT, S3 게이트웨이 엔드포인트 |
+| 클러스터 | EKS 1.36, 프라이빗 API 엔드포인트만, 관리형 노드 그룹 m7i-flex.xlarge × 2, 접속은 SSM 포트 포워딩 |
+| 진입 | AWS Load Balancer Controller + Gateway API(HTTPRoute 가중치·헤더 라우팅) |
+| 데이터 | RDS MySQL 8.4 db.m8g.large Multi-AZ, TLS 강제, 앱 계정은 DML 만 |
+| 비밀 | Secrets Manager → External Secrets Operator, Pod IAM 은 Pod Identity |
+| 이미지 | ECR 불변 태그, push 전 Trivy 관문(CRITICAL 이면 중단) |
+| 앱 운영 | HPA·PDB·topologySpread, readiness gate, NetworkPolicy 기본 차단, PSS baseline |
 
 ## 디렉터리
 
 ```
-env.sh                 공통 변수 + save() — 만든 리소스 ID 는 .state.env 에 누적
-infra/cluster.yaml.tpl eksctl 클러스터 설정 (envsubst 로 치환)
-docker/web/            Nginx 이미지 (Dockerfile, default.conf.template)
-docker/was/            Tomcat 이미지 (Dockerfile, pc-entrypoint.sh)
-k8s/                   was · web · Ingress · HPA/PDB 매니페스트
-scripts/00~06          단계별 구축 스크립트
-scripts/stop|start     매일 노드 0대 + RDS 중지 / 재개
-scripts/destroy.sh     전부 삭제
+env.sh, scripts/lib.sh   공통 변수·함수 (실값은 .state.env 에만, 커밋하지 않음)
+scripts/NN-*.sh          구축·배포·검증 스크립트 (아래 순서)
+scripts/remote/          관리 EC2 에서 SSM Run Command 로 실행되는 스크립트
+infra/                   eksctl 클러스터 설정 템플릿, ECR 수명 주기 정책
+docker/web, docker/was   이미지 (Dockerfile, nginx 설정, 엔트리포인트)
+k8s/                     매니페스트 (namespace, secrets, services, was, web, gateway, canary, netpol, db-init Job)
+diagrams/report/         보고서 그림과 그 원본(src/)
+docs/design.md           설계 문서(기획서): 결정과 이유, 실제 결과. 스크립트 주석의 "기획서 N.N" 은 이 문서의 절이다
 ```
 
-## 실행 순서 (배스천 EC2, Amazon Linux 2023)
+## 실행 순서
 
-배스천에는 이 작업을 할 IAM 권한(역할 또는 `aws configure`)이 있어야 한다.
+모든 스크립트는 로컬 Git Bash 에서 실행한다. 이름 태그로 자원을 먼저 찾고 없을 때만 만들므로, 중간에 끊겨도 다시 실행하면 이어서 진행한다.
 
 ```bash
-git clone <이 저장소> ~/pc && cd ~/pc
-chmod +x scripts/*.sh
+./scripts/01-preflight.sh      # 자격 증명·할당량·AZ·인스턴스 유형 조회만
+./scripts/10-network.sh        # VPC·서브넷·NAT·SG
+./scripts/20-mgmt-ec2.sh       # 관리 EC2 (SSM 전용, 인바운드 0)
+./scripts/31-rds.sh            # RDS Multi-AZ
+./scripts/30-cluster.sh        # EKS → 프라이빗 전환
+./scripts/21-tunnel.sh         # SSM 포트 포워딩 (kubectl 접속)
+./scripts/40-addons.sh         # LBC, Gateway API CRD
+./scripts/35-secrets-eso.sh    # 비밀, ESO
+./scripts/32-db-bootstrap.sh   # DB 계정 (pc_app, pc_migration)
+./scripts/34-ecr.sh            # ECR 저장소
+./scripts/60-build-push.sh     # WAR 빌드 → 이미지 → Trivy → push
+./scripts/70-deploy.sh         # Secret 동기화 → NetworkPolicy → 초기화 Job → Gateway → 앱
+./scripts/90-verify.sh         # 검증 V1~V9
 
-./scripts/00-install-tools.sh   # 1회. 끝나면 재접속 (docker 그룹 적용)
-./scripts/01-vpc.sh             # Day 1 — VPC · 서브넷 6 · IGW · NAT · 라우팅
-./scripts/02-cluster.sh         # Day 1 — EKS (15~25분)
-./scripts/03-addons.sh          # Day 1 — AWS Load Balancer Controller
-./scripts/04-rds.sh             # Day 2 — RDS (10~25분, 기다리는 동안 05 진행)
-./scripts/05-build-push.sh      # Day 2~3 — WAR 빌드 · web/was 이미지 · ECR 푸시
-./scripts/06-deploy.sh          # Day 4 — 배포 · ALB · HPA → 출력된 http://<ALB 주소> 접속
-
-./scripts/stop.sh               # 매일 종료 시
-./scripts/start.sh              # 다음 날 시작 시
-./scripts/destroy.sh            # 프로젝트 종료 시
+./scripts/75-canary.sh         # 수직 묶음 카나리 (up / weight / down)
+./scripts/76-rds-proxy.sh      # DB 경로 전환 (use / direct)
+./scripts/77-pitr.sh           # PITR 복구 리허설
+./scripts/stop.sh / start.sh   # 야간 중지 / 기동
+./scripts/destroy.sh           # 전체 철거 (pc-eks 입력 확인)
 ```
 
-새 터미널에서 직접 명령을 칠 때는 먼저 `source ~/pc/env.sh` — 어제 만든 ID 가 모두 되살아난다.
+## 범위 밖
 
-## 동작 확인
-
-```bash
-kubectl -n petclinic get pods -o wide                  # web 2 · was 2, 2a/2c 에 분산
-curl -sI http://$ALB_DNS/ | grep -i x-app-version     # 응답한 web 버전
-```
-브라우저에서 `http://<ALB 주소>` → Find Owners → Add Owner → 저장 (DB 쓰기 확인).
-
-## 설계 메모
-
-- **web 이 정적 파일을 직접 응답** — WAR 의 `resources/` 를 Nginx 이미지에 넣어 Tomcat 부하를 줄인다.
-- **DB 비밀번호가 이미지·로그에 남지 않음** — WAR 에는 기본값만 있고, 실행 시 Secret → 환경 변수 → `catalina.properties` 로 덮어쓴다. `CATALINA_OPTS -D` 를 쓰면 Tomcat 시작 로그와 `ps` 에 그대로 찍힌다.
-- **was 는 1개로 먼저 기동** — 앱이 시작 시 `schema.sql`/`data.sql` 을 실행하므로 동시에 여러 개가 초기화하지 않게 한다.
-- **NAT 1개** — 비용 절감. 2a 장애 시 2c 노드의 외부 통신(이미지 pull 등)이 끊기는 것은 감수.
-
-## 확장 후보 (핵심 완료 후)
-
-- [ ] HTTPS — 도메인 + ACM + Route 53
-- [ ] External Secrets Operator — Secrets Manager → K8s Secret 자동 동기화 (RDS 비밀 7일 자동 교체 대응)
-- [ ] kube-prometheus-stack — Grafana 대시보드, JMX Exporter 로 Tomcat 지표
-- [ ] k6 부하 테스트 → HPA 확장 증빙
-- [ ] Karpenter — 노드 자동 확장
-- [ ] Fluent Bit → CloudWatch Logs
+HTTPS(도메인 없음), 별도 모니터링 스택. 개선 과제는 보고서 7장에 정리했다.

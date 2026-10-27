@@ -1,10 +1,13 @@
-.state.env
+.state.env*
+.ssm-params.json
 app/
 docker/web/resources/
 docker/was/ROOT.war
 infra/cluster.yaml
 infra/lbc-iam-policy.json
 infra/cluster.dry-run.yaml
+# 3-2 에서 관리 EC2 역할에 붙인 인라인 정책 원본 — 계정 ID·RDS 관리형 비밀 이름 실값 포함 (env.sh "실값 금지")
+infra/policy-mgmt-db-secrets.json
 
 # 자격 증명·비밀 (절대 커밋 금지)
 .env

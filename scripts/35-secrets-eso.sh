@@ -14,7 +14,7 @@ ESO_VERSION=2.12.0
 # ① 비밀
 for s in pc/petclinic/app-db pc/petclinic/migration-db; do
   del=$(aws secretsmanager describe-secret --secret-id $s --query DeletedDate --output text 2>/dev/null) \
-    || die "비밀 $s 없음 — 작업지시서 3-2 대로 새로 만든 뒤 다시 실행"
+    || die "비밀 $s 없음 — 보고서 2.5 대로 새로 만든 뒤 다시 실행"
   if [ "$del" != None ]; then aws secretsmanager restore-secret --secret-id $s >/dev/null; log "✔ 비밀 $s 복구"
   else log "비밀 $s 있음"; fi
 done

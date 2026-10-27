@@ -106,7 +106,7 @@
                 <mxCell id="eso-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="ESO → Secret app-db" vertex="1">
                     <mxGeometry height="40" width="42" x="1010" y="400" as="geometry"/>
                 </mxCell>
-                <mxCell id="ms-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="metrics-server" vertex="1">
+                <mxCell id="ms-pod" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=9;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="metrics-server ×2" vertex="1">
                     <mxGeometry height="40" width="42" x="900" y="478" as="geometry"/>
                 </mxCell>
                 <mxCell id="lbc-pod-c" parent="1" style="labelBackgroundColor=#FFFFFF;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#7F8C8D;strokeColor=#ffffff;fontSize=10;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=pod" value="LBC 2/2" vertex="1">
@@ -187,13 +187,13 @@
                 <mxCell id="e-igw-alb" edge="1" parent="1" source="igw" style="fontSize=10;labelBackgroundColor=#FFFFFF;fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#232F3E;" target="alb" value="① HTTP :80">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e-alb-weba" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" target="web-a" value="② Pod IP :80 (Service web)">
+                <mxCell id="e-alb-weba" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" target="web-a" value="② Pod IP :8080 (Service web)">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e-alb-webc" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;" target="web-c" value="② Pod IP :80 (Service web)">
+                <mxCell id="e-alb-webc" edge="1" parent="1" source="alb" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#8C4FFF;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;" target="web-c" value="② Pod IP :8080 (Service web)">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e-alb-canary" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="web-canary" value="10%">
+                <mxCell id="e-alb-canary" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=0;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" target="web-canary" value="10% · 헤더 x-canary">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="600" y="300"/>
@@ -211,25 +211,25 @@
                 <mxCell id="e-canary" edge="1" parent="1" source="web-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;" target="was-canary">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e-wasa-rds" edge="1" parent="1" source="was-a" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" target="rds-p" value="④ db (ExternalName) · JDBC 3306">
+                <mxCell id="e-wasa-rds" edge="1" parent="1" source="was-a" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" target="rds-proxy" value="④ db (ExternalName → RDS Proxy) · TLS 3306">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="530" y="424"/>
                             <mxPoint x="530" y="540"/>
-                            <mxPoint x="324" y="540"/>
+                            <mxPoint x="504" y="540"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="e-wasc-rds" edge="1" parent="1" source="was-c" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.75;entryY=0;" target="rds-p" value="④ db (ExternalName) · JDBC 3306">
+                <mxCell id="e-wasc-rds" edge="1" parent="1" source="was-c" style="fontStyle=1;edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.75;entryY=0;" target="rds-proxy" value="④ db (ExternalName → RDS Proxy) · TLS 3306">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="880" y="424"/>
                             <mxPoint x="880" y="590"/>
-                            <mxPoint x="336" y="590"/>
+                            <mxPoint x="516" y="590"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="e-canary-rds" edge="1" parent="1" source="was-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=1;entryY=0.25;" target="rds-p" value="3306">
+                <mxCell id="e-canary-rds" edge="1" parent="1" source="was-canary" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D6B656;dashed=0;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=1;entryY=0.25;" target="rds-proxy" value="3306 (was-canary)">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="865" y="498"/>
@@ -345,6 +345,12 @@
                             <mxPoint x="941" y="350"/>
                         </Array>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="rds-proxy" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#C925D1;strokeColor=none;dashed=0;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;html=1;fontSize=10;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.rds_proxy;" value="RDS Proxy (TLS 필수)&lt;br&gt;ENI db-a·db-c&lt;br&gt;앱 비밀만 · 풀링" vertex="1">
+                    <mxGeometry height="48" width="48" x="480" y="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="e-proxy-rds" edge="1" parent="1" source="rds-proxy" style="html=1;endArrow=block;strokeColor=#C925D1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="rds-p" value="3306 · 장애 조치 추종">
+                    <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

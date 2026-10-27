@@ -1,6 +1,6 @@
 #!/bin/bash
 # 앱 배포 — 로컬에서 실행 (터널은 tunnel_up 이 자동으로 엶)
-# 순서(작업지시서): 네임스페이스·비밀 → 초기화 Job 완료 대기(실패 시 중단)
+# 순서: 네임스페이스·비밀 → 초기화 Job 완료 대기(실패 시 중단)
 #   → Service(was·web·db) → Gateway·HTTPRoute·TGC → TargetGroupBinding 생성 대기 → Deployment(was → web)
 # 다시 실행해도 안전: Job 은 해시가 같으면 그대로(완료 상태), 나머지는 apply
 set -euo pipefail

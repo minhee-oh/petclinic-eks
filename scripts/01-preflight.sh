@@ -1,5 +1,5 @@
 #!/bin/bash
-# 사전 점검 — 조회만 한다 (자원 생성·요금 없음). 작업지시서 1-3, 1-4
+# 사전 점검 — 조회만 한다 (자원 생성·요금 없음)
 set -euo pipefail
 source "$(dirname "$0")/../env.sh"
 require_aws 5
