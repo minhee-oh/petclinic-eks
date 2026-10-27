@@ -1,0 +1,59 @@
+# 외부 진입 — Gateway API (2-8 샘플로 확인한 형식). GatewayClass pc-alb 는 2-8 에서 만들어 둔 것을 쓴다
+# 이 파일 → TargetGroupBinding 생성 확인 → Deployment 순서 (readiness gate 는 Pod 생성 시점에 TGB 가 있어야 주입)
+# 형식 근거: LBC v3.5.0 문서 guide/gateway/{loadbalancerconfig,targetgroupconfig}
+apiVersion: gateway.k8s.aws/v1
+kind: LoadBalancerConfiguration
+metadata:
+  name: petclinic-lb
+  namespace: petclinic
+spec:
+  scheme: internet-facing   # 기본은 internal
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: petclinic
+  namespace: petclinic
+spec:
+  gatewayClassName: pc-alb
+  infrastructure:
+    parametersRef: {group: gateway.k8s.aws, kind: LoadBalancerConfiguration, name: petclinic-lb}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces: {from: Same}
+---
+# web 대상 그룹: ip 대상(readiness gate 는 ip 에서만), 등록 해제 30초(preStop 15초 + 여유 — 기본 300초면 롤링이 느림)
+# 헬스체크는 nginx 자체만 보는 /healthz — was·DB 장애로 web 전체가 빠지지 않게
+apiVersion: gateway.k8s.aws/v1
+kind: TargetGroupConfiguration
+metadata:
+  name: web
+  namespace: petclinic
+spec:
+  targetReference: {kind: Service, name: web}
+  defaultConfiguration:
+    targetType: ip
+    targetGroupAttributes:
+      - {key: deregistration_delay.timeout_seconds, value: "30"}
+    healthCheckConfig:
+      healthCheckPath: /healthz
+      healthCheckProtocol: HTTP
+      healthCheckInterval: 10
+      healthCheckTimeout: 5
+      healthyThresholdCount: 2
+      unhealthyThresholdCount: 2
+      matcher: {httpCode: "200"}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web
+  namespace: petclinic
+spec:
+  parentRefs: [{name: petclinic, sectionName: http}]
+  rules:
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs: [{name: web, port: 8080}]

@@ -1,47 +1,92 @@
+# was — Tomcat + petclinic (DB 는 Service 'db' → RDS, 계정은 Secret app-db = DML 만)
+# 직접 apply 하지 않는다. scripts/70-deploy.sh 가 __IMAGE__ 를 채운다 (ECR 주소:IMAGE_TAG, 태그 변경 불가)
+# replicas 필드 없음 — 개수는 HPA 가 정한다 (있던 필드를 나중에 지우면 apply 가 1개로 되돌림, 기획서)
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: was, namespace: petclinic, labels: { app: was } }
+metadata:
+  name: was
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic, tier: was}
 spec:
-  replicas: 1          # 첫 기동에서 스키마 생성이 끝난 뒤 2개로 늘린다 (06-deploy.sh)
-  selector: { matchLabels: { app: was } }
+  selector:
+    matchLabels: {app.kubernetes.io/name: petclinic, tier: was}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}   # 새 Pod 가 Ready 된 뒤에 옛 Pod 를 내린다
   template:
-    metadata: { labels: { app: was } }
+    metadata:
+      labels: {app.kubernetes.io/name: petclinic, tier: was}
     spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45   # preStop 15 + Tomcat 종료
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001                  # Dockerfile 의 USER
+        runAsGroup: 0
+        seccompProfile: {type: RuntimeDefault}
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector: { matchLabels: { app: was } }
+          whenUnsatisfiable: ScheduleAnyway   # 한 AZ 노드가 없을 때 Pending 대신 다른 AZ 에 (기획서)
+          labelSelector:
+            matchLabels: {app.kubernetes.io/name: petclinic, tier: was}
+          # 같은 ReplicaSet 끼리만 센다 — 없으면 롤링 중 옛 Pod 까지 세어 새 Pod 가 한 AZ 로 몰린다 (V2 실측)
+          matchLabelKeys: [pod-template-hash]
       containers:
-        - name: tomcat
-          image: ${ECR}/pc-was:${IMAGE_TAG}
-          ports:
-            - { name: http, containerPort: 8080 }
+        - name: was
+          image: __IMAGE__
+          ports: [{name: http, containerPort: 8080}]
           env:
-            - name: DB_HOST
-              valueFrom: { configMapKeyRef: { name: pc-db-config, key: DB_HOST } }
+            - {name: DB_HOST, value: db}
             - name: DB_USER
-              valueFrom: { secretKeyRef: { name: pc-db-secret, key: DB_USER } }
+              valueFrom: {secretKeyRef: {name: app-db, key: username}}
             - name: DB_PASS
-              valueFrom: { secretKeyRef: { name: pc-db-secret, key: DB_PASS } }
-          resources:
-            requests: { cpu: 500m, memory: 1Gi }
-            limits:   { memory: 1536Mi }
-          startupProbe:            # Tomcat 이 처음 뜰 때까지(최대 300초) 재시작하지 않음
-            httpGet: { path: /, port: http }
-            periodSeconds: 10
+              valueFrom: {secretKeyRef: {name: app-db, key: password}}
+          resources:   # CPU 상한 없음(스로틀링 방지), 메모리 요청 = 상한 (힙 70% — Dockerfile JAVA_OPTS)
+            requests: {cpu: 500m, memory: 1Gi}
+            limits: {memory: 1Gi}
+          # 기동(WAR 전개 + Spring) 최대 150초 동안은 startup 만 본다
+          startupProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 5
             failureThreshold: 30
           readinessProbe:
-            httpGet: { path: /, port: http }
-            periodSeconds: 10
+            httpGet: {path: /, port: http}
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
           livenessProbe:
-            tcpSocket: { port: http }
-            periodSeconds: 20
+            httpGet: {path: /, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              sleep: {seconds: 15}   # 엔드포인트 제거가 퍼질 시간 (셸 없이 kubelet 이 대기)
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+            # readOnlyRootFilesystem 은 켜지 않음: 엔트리포인트가 conf/, Tomcat 이 work·logs·temp 에 쓴다 (개선 과제)
 ---
-apiVersion: v1
-kind: Service
-metadata: { name: was, namespace: petclinic, labels: { app: was } }
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: was
+  namespace: petclinic
 spec:
-  selector: { app: was }
-  ports:
-    - { name: http, port: 8080, targetPort: http }
+  minAvailable: 1   # 노드 drain(업그레이드·축소) 때 한 번에 다 빠지지 않게
+  selector:
+    matchLabels: {app.kubernetes.io/name: petclinic, tier: was}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: was
+  namespace: petclinic
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: was}
+  minReplicas: 2
+  maxReplicas: 4   # DB 연결 상한 계산의 기준 (기획서)
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}

@@ -1,0 +1,76 @@
+# 4-3 NetworkPolicy — 기본 차단 + 필요한 경로만 (V5)
+# 엔진: VPC CNI 네트워크 정책(enableNetworkPolicy=true, infra/cluster.yaml.tpl)
+# 허용 경로:  ALB(퍼블릭 서브넷) → web:8080 → was:8080 → private-db 대역:3306,  db-init → private-db 대역:3306,  모든 Pod → CoreDNS:53
+# DB 는 ExternalName(db → RDS DNS)이라 Pod 셀렉터로 고를 수 없다 → private-db 서브넷 CIDR 로 연다 (RDS·Proxy ENI 가 그 대역에만 있다)
+# 적용 직후 확인: kubelet probe·ALB 헬스체크가 계속 통과하는지(대상 healthy, Pod 재시작 0) — 되돌리기: kubectl delete -f 이 파일
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: petclinic
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: petclinic
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}
+          podSelector: {matchLabels: {k8s-app: kube-dns}}
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+---
+# ALB 노드는 퍼블릭 서브넷(pub-a·pub-c)에 있다. 대상 유형 ip 라 ALB → Pod IP 로 바로 온다
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web
+  namespace: petclinic
+spec:
+  podSelector: {matchLabels: {tier: web}}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - ipBlock: {cidr: 10.0.0.0/24}
+        - ipBlock: {cidr: 10.0.1.0/24}
+      ports: [{protocol: TCP, port: 8080}]
+  egress:
+    - to: [{podSelector: {matchLabels: {tier: was}}}]
+      ports: [{protocol: TCP, port: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: was
+  namespace: petclinic
+spec:
+  podSelector: {matchLabels: {tier: was}}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from: [{podSelector: {matchLabels: {tier: web}}}]
+      ports: [{protocol: TCP, port: 8080}]
+  egress:
+    - to:
+        - ipBlock: {cidr: 10.0.20.0/24}
+        - ipBlock: {cidr: 10.0.21.0/24}
+      ports: [{protocol: TCP, port: 3306}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-init
+  namespace: petclinic
+spec:
+  podSelector: {matchLabels: {tier: db-init}}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - ipBlock: {cidr: 10.0.20.0/24}
+        - ipBlock: {cidr: 10.0.21.0/24}
+      ports: [{protocol: TCP, port: 3306}]

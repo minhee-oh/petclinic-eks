@@ -1,0 +1,116 @@
+# 2-8 Gateway 샘플 ① 경로 — 네임스페이스·Service·TGC·Gateway·HTTPRoute (Pod 없음)
+# 순서가 중요하다: 이 파일 → TargetGroupBinding 생성 확인 → gw-sample-b-apps.yaml
+#   readiness gate 는 "Pod 생성 시점"에 TGB 가 있어야 주입된다 (작업지시서 3-7 과 같은 순서)
+# 확인 후 kubectl delete ns gw-sample → ALB 소멸 확인 (주말 과금 방지)
+# 형식 근거: LBC v3.5.0 문서 guide/gateway/{loadbalancerconfig,targetgroupconfig}, deploy/pod_readiness_gate
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gw-sample
+  labels:
+    elbv2.k8s.aws/pod-readiness-gate-inject: enabled
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: pc-alb
+spec:
+  controllerName: gateway.k8s.aws/alb
+---
+# 기본 scheme 은 internal — 외부 접속 확인용이라 internet-facing (퍼블릭 서브넷은 kubernetes.io/role/elb=1 태그로 찾음)
+apiVersion: gateway.k8s.aws/v1
+kind: LoadBalancerConfiguration
+metadata:
+  name: gw-sample-lb
+  namespace: gw-sample
+spec:
+  scheme: internet-facing
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gw-sample
+  namespace: gw-sample
+spec:
+  gatewayClassName: pc-alb
+  infrastructure:
+    parametersRef:
+      group: gateway.k8s.aws
+      kind: LoadBalancerConfiguration
+      name: gw-sample-lb
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-stable
+  namespace: gw-sample
+spec:
+  selector: {app: echo, track: stable}
+  ports: [{port: 80, targetPort: 5678}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-canary
+  namespace: gw-sample
+spec:
+  selector: {app: echo, track: canary}
+  ports: [{port: 80, targetPort: 5678}]
+---
+# 대상 유형 기본값은 instance(NodePort) — readiness gate 는 ip 에서만 동작하므로 Service 마다 ip 로 지정
+apiVersion: gateway.k8s.aws/v1
+kind: TargetGroupConfiguration
+metadata:
+  name: echo-stable
+  namespace: gw-sample
+spec:
+  targetReference: {kind: Service, name: echo-stable}
+  defaultConfiguration:
+    targetType: ip
+    targetGroupAttributes:
+      - key: deregistration_delay.timeout_seconds
+        value: "30"
+---
+apiVersion: gateway.k8s.aws/v1
+kind: TargetGroupConfiguration
+metadata:
+  name: echo-canary
+  namespace: gw-sample
+spec:
+  targetReference: {kind: Service, name: echo-canary}
+  defaultConfiguration:
+    targetType: ip
+    targetGroupAttributes:
+      - key: deregistration_delay.timeout_seconds
+        value: "30"
+---
+# 규칙 1: x-canary: "true" 헤더 → canary 100%
+# 규칙 2: 나머지 → stable 90 : canary 10
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: echo
+  namespace: gw-sample
+spec:
+  parentRefs:
+    - name: gw-sample
+      sectionName: http
+  rules:
+    - matches:
+        - path: {type: PathPrefix, value: /}
+          headers:
+            - {type: Exact, name: x-canary, value: "true"}
+      backendRefs:
+        - {name: echo-canary, port: 80}
+    - matches:
+        - path: {type: PathPrefix, value: /}
+      backendRefs:
+        - {name: echo-stable, port: 80, weight: 90}
+        - {name: echo-canary, port: 80, weight: 10}

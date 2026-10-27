@@ -1,0 +1,69 @@
+# DB 초기화 Job — 스키마·기본 데이터 (마이그레이션 계정 pc_migration, 앱 계정은 DML 만이라 여기서 만든다)
+# 직접 apply 하지 않는다. scripts/70-deploy.sh 가 __HASH__ · __DB_HOST__ 를 채운다
+#   __HASH__   : k8s/db/*.sql + 이 파일의 sha256 앞 8자리 → SQL·Job 정의가 바뀌면 새 이름(Job 템플릿은 수정 불가)
+#   __DB_HOST__: RDS 엔드포인트 직접 — 4-4 에서 앱 경로(ExternalName db)만 RDS Proxy 로 바꿔도 Job 은 그대로
+# SQL 은 petclinic 커밋 cf39292 의 db/mysql (CREATE ... IF NOT EXISTS, INSERT IGNORE → 다시 실행해도 안전)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: petclinic-db-init-__HASH__
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic, tier: db-init}
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 86400   # 하루 뒤 자동 삭제 (증빙 확인할 시간은 남김)
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: petclinic, tier: db-init}   # 4-3 NetworkPolicy 가 이 라벨에 DB 3306 을 연다
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false   # API 를 쓰지 않는다
+      securityContext:                      # PSS restricted 충족 (mysql 이미지의 mysql 사용자 uid 999)
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: db-init
+          # 클라이언트 = RDS 서버와 같은 8.4.11. 태그는 다시 빌드되므로 다이제스트로 고정 (2026-10-25 Docker Hub)
+          image: mysql:8.4.11@sha256:0f51e63e537a1f176423fa03ef559aabe6fa4372a53160a44bc7e75da7d15364
+          command: ["/bin/bash", "-c"]
+          # 비밀번호는 명령줄(-p)에 두지 않는다 → ps·로그에 안 남게 /tmp 옵션 파일(600)로
+          # --ssl-mode=REQUIRED: 서버도 require_secure_transport=1 (기획서)
+          args:
+            - |
+              set -euo pipefail
+              umask 077
+              printf '[client]\nuser=%s\npassword=%s\nhost=%s\nssl-mode=REQUIRED\n' "$DB_USER" "$DB_PASS" "$DB_HOST" > /tmp/my.cnf
+              unset DB_PASS
+              M="mysql --defaults-extra-file=/tmp/my.cnf petclinic"
+              echo "== schema.sql"; $M < /sql/schema.sql
+              echo "== data.sql";   $M < /sql/data.sql
+              echo "== check"
+              $M -t -e "SELECT (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='petclinic') AS tables_,
+                (SELECT COUNT(*) FROM vets) vets, (SELECT COUNT(*) FROM specialties) specialties,
+                (SELECT COUNT(*) FROM types) types, (SELECT COUNT(*) FROM owners) owners,
+                (SELECT COUNT(*) FROM pets) pets, (SELECT COUNT(*) FROM visits) visits;
+                SHOW STATUS LIKE 'Ssl_version';"
+          env:
+            - {name: DB_HOST, value: "__DB_HOST__"}
+            - name: DB_USER
+              valueFrom: {secretKeyRef: {name: migration-db, key: username}}
+            - name: DB_PASS
+              valueFrom: {secretKeyRef: {name: migration-db, key: password}}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: sql, mountPath: /sql, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: sql
+          configMap: {name: petclinic-db-sql-__HASH__}
+        - name: tmp
+          emptyDir: {medium: Memory, sizeLimit: 1Mi}

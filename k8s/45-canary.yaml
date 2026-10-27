@@ -1,0 +1,169 @@
+# 수직 묶음 카나리 (기획서 결정 '카나리') — web-canary → was-canary → 같은 RDS, 나누는 곳은 ALB 한 곳
+# 직접 apply 하지 않는다. scripts/75-canary.sh 가 __WEB_IMAGE__·__WAS_IMAGE__ 를 카나리 태그로 채운다
+# stable 과 겹치지 않게: 카나리 Pod 는 app.kubernetes.io/name=petclinic-canary
+#   → stable Deployment·Service·HPA·PDB(셀렉터 name=petclinic)가 카나리 Pod 를 잡지 않는다
+#   → NetworkPolicy 는 tier 라벨 기준이라 카나리도 같은 경로(ALB→web→was→DB)만 허용된다
+# 카나리는 HPA 없이 1개 고정 — DB 연결 상한 (4+1+1)×8+5 = 53 의 '+1' (기획서)
+apiVersion: v1
+kind: Service
+metadata:
+  name: was-canary
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic-canary, tier: was, track: canary}
+spec:
+  selector: {app.kubernetes.io/name: petclinic-canary, tier: was}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-canary
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic-canary, tier: web, track: canary}
+spec:
+  selector: {app.kubernetes.io/name: petclinic-canary, tier: web}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+# web-canary 대상 그룹 — stable web 과 같은 설정 (ip 대상, 등록 해제 30초, /healthz)
+apiVersion: gateway.k8s.aws/v1
+kind: TargetGroupConfiguration
+metadata:
+  name: web-canary
+  namespace: petclinic
+spec:
+  targetReference: {kind: Service, name: web-canary}
+  defaultConfiguration:
+    targetType: ip
+    targetGroupAttributes:
+      - {key: deregistration_delay.timeout_seconds, value: "30"}
+    healthCheckConfig:
+      healthCheckPath: /healthz
+      healthCheckProtocol: HTTP
+      healthCheckInterval: 10
+      healthCheckTimeout: 5
+      healthyThresholdCount: 2
+      unhealthyThresholdCount: 2
+      matcher: {httpCode: "200"}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: was-canary
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic-canary, tier: was, track: canary}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: petclinic-canary, tier: was}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: petclinic-canary, tier: was, track: canary}
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 0
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: was
+          image: __WAS_IMAGE__
+          ports: [{name: http, containerPort: 8080}]
+          env:
+            - {name: DB_HOST, value: db}
+            - name: DB_USER
+              valueFrom: {secretKeyRef: {name: app-db, key: username}}
+            - name: DB_PASS
+              valueFrom: {secretKeyRef: {name: app-db, key: password}}
+          resources:
+            requests: {cpu: 500m, memory: 1Gi}
+            limits: {memory: 1Gi}
+          startupProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              sleep: {seconds: 15}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-canary
+  namespace: petclinic
+  labels: {app.kubernetes.io/name: petclinic-canary, tier: web, track: canary}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: petclinic-canary, tier: web}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: petclinic-canary, tier: web, track: canary}
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: web
+          image: __WEB_IMAGE__
+          ports: [{name: http, containerPort: 8080}]
+          env:
+            - {name: WAS_UPSTREAM, value: was-canary}   # 카나리 web 은 카나리 was 로만 간다
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 128Mi}
+          startupProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              sleep: {seconds: 15}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+---
+# 라우팅 — 40-gateway.yaml 의 HTTPRoute web 을 덮어쓴다 (되돌리기 = 40-gateway.yaml 다시 apply)
+# 규칙 1: x-canary: true 헤더 → 카나리 100% (선공개)   규칙 2: 나머지 → stable __STABLE_W__ : 카나리 __CANARY_W__
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web
+  namespace: petclinic
+spec:
+  parentRefs: [{name: petclinic, sectionName: http}]
+  rules:
+    - matches: [{headers: [{type: Exact, name: x-canary, value: "true"}]}]
+      backendRefs: [{name: web-canary, port: 8080}]
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs:
+        - {name: web, port: 8080, weight: __STABLE_W__}
+        - {name: web-canary, port: 8080, weight: __CANARY_W__}

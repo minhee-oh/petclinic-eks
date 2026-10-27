@@ -1,0 +1,45 @@
+# 2-8 Gateway 샘플 ② 앱 — gw-sample-a-routing.yaml 적용 후 TargetGroupBinding 2개가 생긴 "뒤"에 적용
+# 응답 본문이 stable / canary 라서 curl 결과를 세면 분포가 나온다
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-stable
+  namespace: gw-sample
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: echo, track: stable}
+  template:
+    metadata:
+      labels: {app: echo, track: stable}
+    spec:
+      containers:
+        - name: echo
+          image: hashicorp/http-echo:1.0
+          args: ["-text=stable", "-listen=:5678"]
+          ports: [{containerPort: 5678}]
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {memory: 32Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-canary
+  namespace: gw-sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: echo, track: canary}
+  template:
+    metadata:
+      labels: {app: echo, track: canary}
+    spec:
+      containers:
+        - name: echo
+          image: hashicorp/http-echo:1.0
+          args: ["-text=canary", "-listen=:5678"]
+          ports: [{containerPort: 5678}]
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {memory: 32Mi}
