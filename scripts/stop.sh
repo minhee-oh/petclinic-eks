@@ -38,13 +38,15 @@ log "노드 그룹 0 요청 — 15분 판정 시작"
 wait_nodes_zero() {  # 초
   local end=$(( $(date +%s) + $1 )) n
   while [ "$(date +%s)" -lt "$end" ]; do
-    n=$(asg_instances); [ "$n" = 0 ] && return 0
+    n=$(asg_instances 2>/dev/null || true); [ "$n" = 0 ] && return 0   # 조회 실패(네트워크)는 판정하지 않고 다음 회차
     sleep 30
   done
   return 1
 }
 
-if ! wait_nodes_zero 900; then
+# 조회가 계속 실패해서 시간만 지난 경우를 '막힘'으로 오판하지 않게, 판정 직전에 한 번 더 확인 (3-10 트러블슈팅)
+if ! wait_nodes_zero 900 && ! wait_nodes_zero 60; then
+  [ -n "$(asg_instances 2>/dev/null || true)" ] || die "AWS 조회 실패(네트워크?) — 노드 상태를 판정할 수 없음. 연결 확인 후 다시 실행"
   # 막힘 판정 — 이때만(조건부) kube-system 을 건드린다. 막히지 않은 밤에는 이 블록이 실행되지 않는다
   log "15분이 지나도 노드가 줄지 않음 = 막힘. 원인 기록: $LOG_DIR"
   tunnel_up   # 15분 대기 동안 kubectl 을 안 써서 SSM 유휴 제한(20분)에 가까움 → 닫혔으면 다시 연다
