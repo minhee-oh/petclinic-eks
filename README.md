@@ -60,7 +60,9 @@ docs/design.md           설계 문서(기획서): 결정과 이유, 실제 결�
 
 - **도구** (로컬 Windows): Git Bash, AWS CLI v2, Session Manager 플러그인, eksctl, kubectl, Helm. 이미지 빌드는 관리 EC2에서 하므로 로컬 Docker는 필요 없다
 - **자격 증명**: AWS CLI 프로필 설정 후 `aws sts get-caller-identity`로 확인
-- **태그 소유자**: `export PC_OWNER=<이름>` (저장소에 남기지 않음). 나머지 값은 `env.sh`에 있고, 계정 ID는 실행할 때 조회한다
+- **태그 소유자**: `export PC_OWNER=<이름>` (저장소에 남기지 않음). 나머지 값(리전 ap-northeast-2, 이름, 버전)은 `env.sh`에 있고, 계정 ID는 실행할 때 조회한다
+- **관리자 권한 한 번**: `21-tunnel.sh`가 알려 주는 한 줄을 hosts 파일에 넣어야 kubectl이 붙는다 (API 서버 인증서가 엔드포인트 이름으로 발급돼 있어서)
+- **생성 중 노출**: `30-cluster.sh`는 생성하는 20~30분 동안만 API 엔드포인트를 내 공인 IP /32로 열고, 끝나면 프라이빗으로 닫는다
 - **비용 주의**: 켜 두면 월 약 $920 (서울 온디맨드 730시간, 보고서 6.4). 쓰지 않을 때는 `stop.sh`, 끝나면 반드시 `destroy.sh`
 
 ## 실행 순서
@@ -79,15 +81,19 @@ docs/design.md           설계 문서(기획서): 결정과 이유, 실제 결�
 ./scripts/32-db-bootstrap.sh   # DB 계정 (pc_app, pc_migration)
 ./scripts/34-ecr.sh            # ECR 저장소
 ./scripts/60-build-push.sh     # WAR 빌드 → 이미지 → Trivy → push
-./scripts/70-deploy.sh         # Secret 동기화 → NetworkPolicy → 초기화 Job → Gateway → 앱
-./scripts/90-verify.sh         # 검증 V1~V9
+./scripts/70-deploy.sh         # Secret 동기화 → NetworkPolicy → 초기화 Job → Gateway → 앱, 끝에 ALB 주소 출력
+./scripts/90-verify.sh <명령>  # 검증: loop(무중단) · load / unload(k6 부하) · conns(DB 연결) · netpol
 
-./scripts/75-canary.sh         # 수직 묶음 카나리 (up / weight / down)
-./scripts/76-rds-proxy.sh      # DB 경로 전환 (use / direct)
-./scripts/77-pitr.sh           # PITR 복구 리허설
-./scripts/stop.sh / start.sh   # 야간 중지 / 기동
+./scripts/75-canary.sh         # 수직 묶음 카나리 (up / weight / measure / down)
+./scripts/76-rds-proxy.sh      # RDS Proxy 생성(up), DB 경로 전환 (use / direct)
+./scripts/77-pitr.sh           # PITR 복구 리허설 (mark / restore / check / delete)
+./scripts/stop.sh              # 야간 중지: 앱 0 → 노드 0 → RDS·관리 EC2
+./scripts/start.sh             # 기동 (역순, 약 10분)
+./scripts/nat.sh status|down|up # 작업 없는 날 NAT 삭제 / 같은 EIP로 재생성 (start.sh 전에 up)
 ./scripts/destroy.sh           # 전체 철거 (pc-eks 입력 확인)
 ```
+
+자원을 만들기 전에 각 스크립트 머리의 주석(사용법, 전제 조건)을 먼저 읽는다.
 
 ## 범위 밖
 
